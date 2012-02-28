@@ -1,0 +1,16 @@
+[github]
+	user = jergason
+[alias]
+	co = checkout
+	ci = commit
+	st = status
+	br = branch
+[user]
+	name = Jamison Dance
+	email = jergason@gmail.com
+[color]
+	diff = auto
+	status = auto
+	branch = auto
+[core]
+	editor = edit -w

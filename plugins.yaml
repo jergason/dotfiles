@@ -1,0 +1,12 @@
+git:
+  snipmate.vim: git://github.com/jergason/snipmate.vim.git
+  nerdtree: git://github.com/scrooloose/nerdtree.git
+  nerdcommenter: git://github.com/scrooloose/nerdcommenter.git
+  vim-colors-solarized: git://github.com/altercation/vim-colors-solarized.git
+  vim-surround: git://github.com/tpope/vim-surround.git
+  vim-jade: git://github.com/digitaltoad/vim-jade.git
+  vim-markdown: git://github.com/tpope/vim-markdown.git
+  vim-javascript: git://github.com/pangloss/vim-javascript
+  ack: git://github.com/mileszs/ack.vim.git
+  supertab: git://github.com/ervandew/supertab.git
+  vim-coffee-script: git://github.com/kchmck/vim-coffee-script.git
