@@ -11,3 +11,7 @@ set guioptions-=l
 set guioptions-=r
 
 set guifont=Inconsolata:h17
+
+
+" Lazy redraw, for MacVim speedups
+set lazyredraw
