@@ -50,16 +50,27 @@ nnoremap <leader><leader> <C-^>
 
 " clear search buffer when hitting return, so what you search for is not
 " highlighted anymore. From Gary Bernhardt of Destroy All Software
-:nnoremap <CR> :nohlsearch<cr>
+nnoremap <CR> :nohlsearch<cr>
 
 " remap coffeescript compilation
 vmap <leader>c <esc>:'<,'>:CoffeeCompile<CR>
 map <leader>c :CoffeeCompile<CR>
 
-" compile the whole coffeescript file and jumpt to a line
+" compile the whole coffeescript file and jump to a line
 " useful for debugging stack traces
+" Run with :C [line_number]
 command -nargs=1 C CoffeeCompile | :<args>
 
+
+" Plugin Setup Section
+" ********************
+
+" Setup ctrlp.vim
+" Ignore version control and binary files
+let g:ctrlp_custom_ignore = {
+  \ 'dir': '\.git$\|\.hg$\|\.svn$',
+  \ 'file': '\.o$\|\.exe$\|\.bin$'
+  \ }
 
 " .json files are javascript
 au BufRead,BufNewFile *.json set ft=javascript
@@ -67,14 +78,4 @@ au BufRead,BufNewFile *.json set ft=javascript
 " These are all actually ruby files
 au BufRead,BufNewFile {Gemfile,Rakefile,Vagrantfile,config.ru,*.gemspec} set ft=ruby
 
-" Open NerdTree when Vim starts
-au VimEnter * NERDTree
-au VimEnter * wincmd p
-
-
-" Highlight coloumns over 80 characters long
-"if exists('+colorcoloumn')
-  "set cc=80
-"else
-  "au BufWinEnter * let w:m2=matchadd('ErrorMsg', '\%>80v.\+', -1)
-"endif
+au BufRead,BufNewFile *.java set ft=java
