@@ -11,3 +11,8 @@ are moved aside with the prefix of `old`, so if you already have a
 
 The Rake task will download and install a choice set of Vim plugins, so
 I don't have to worry about keeping them in my repository.
+
+
+## TODO:
+* Fix some problems on Mac OS X systems without homebrew
+* Fix some problems with systems without RVM
