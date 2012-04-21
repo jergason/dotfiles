@@ -12,3 +12,4 @@ git:
   vim-coffee-script: git://github.com/kchmck/vim-coffee-script.git
   ctrlp.vim: git://github.com/kien/ctrlp.vim.git
   molokai: git://github.com/tomasr/molokai.git
+  scala.vim: git://github.com/jergason/scala.vim.git
