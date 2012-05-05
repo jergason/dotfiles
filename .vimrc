@@ -8,7 +8,7 @@ au FileType python set softtabstop=4 tabstop=4 shiftwidth=4 textwidth=0
 set showcmd                     " display incomplete commands
 
 set background=dark
-colorscheme solarized
+colorscheme molokai
 
 " Gutter
 set number
@@ -47,6 +47,9 @@ let mapleader="," " use , for leader instead of backslash
 inoremap jj <esc>
 " use leader leader to jump to the previously edited file
 nnoremap <leader><leader> <C-^>
+
+" Easier opening and closing of nerdtree
+nnoremap <leader>t :NERDTreeToggle<CR>
 
 " clear search buffer when hitting return, so what you search for is not
 " highlighted anymore. From Gary Bernhardt of Destroy All Software
