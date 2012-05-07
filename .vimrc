@@ -3,6 +3,7 @@ syntax enable
 set encoding=utf-8
 
 call pathogen#infect()
+call pathogen#helptags()
 filetype plugin indent on       " load file type plugins + indentation
 au FileType python set softtabstop=4 tabstop=4 shiftwidth=4 textwidth=0
 set showcmd                     " display incomplete commands
@@ -40,6 +41,30 @@ set smartcase                   " ... unless they contain at least one capital l
 set dir=~/.vim/tmp
 set backupdir=~/.vim/tmp
 
+
+" statusline setup
+" see :help statusline for more info on these options
+" always show status line
+set laststatus=2
+set statusline=file:%f " filename
+set statusline+=[%{strlen(&fenc)?&fenc:'none'}, " file encoding
+set statusline+=%{&ff}] " file format
+set statusline+=%m " modified flag
+set statusline+=%y " file type
+set statusline+=%= " separator between right and left items
+set statusline+=%{StatusLineFileSize()} " number of bytes or K in file
+set statusline+=%l/%L " current line / total lines
+set statusline+=\ %P " percentage through file
+
+function! StatusLineFileSize()
+  let size = getfsize(expand('%%:p'))
+  if (size < 1024)
+    return size . 'b '
+  else
+    let size = size / 1024
+    return size . 'k '
+  endif
+endfunction
 
 " Mappings
 let mapleader="," " use , for leader instead of backslash
