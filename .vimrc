@@ -8,6 +8,7 @@ filetype plugin indent on       " load file type plugins + indentation
 au FileType python set softtabstop=4 tabstop=4 shiftwidth=4 textwidth=0
 set showcmd                     " display incomplete commands
 
+set t_Co=256 " 256 colors for terminal
 set background=dark
 colorscheme molokai
 
@@ -75,6 +76,9 @@ nnoremap <leader><leader> <C-^>
 
 " Easier opening and closing of nerdtree
 nnoremap <leader>t :NERDTreeToggle<CR>
+
+" Eliminate all trailing whitespace
+nnoremap <leader>w :%s/\s\+$//e<CR>
 
 " clear search buffer when hitting return, so what you search for is not
 " highlighted anymore. From Gary Bernhardt of Destroy All Software
