@@ -7,24 +7,15 @@ elif [[ "$unamestr" == "Darwin" ]]; then
   platform='freebsd'
 fi
 
-
-if [[ "$platform" == 'freebsd' ]]; then
-  export PATH=/usr/local/Cellar/python/2.7.1/lib/python2.7/site-packages/django/bin:$PATH
-fi
-
-export PATH=/usr/local/bin:$PATH
-export PATH=/usr/local/share/python:$PATH
+export PATH=/usr/local/bin:/usr/local/sbin:$PATH
 if [[ "$platform" == 'freebsd' ]]; then
   export EDITOR=mvim
 else
   export EDITOR=vim
 fi
 export GNUTERM='x11'
-export NODE_PATH=/usr/local/lib/node_modules:/usr/local/lib/node
+export NODE_PATH=/usr/local/lib/node_modules:/usr/local/lib/node:$NODE_PATH
 
-export WEKA_PATH=/Applications/weka-3-6-5
-export CLASSPATH=$WEKA_PATH:$CLASSPATH
-export CP=$WEKA_PATH/weka.jar
 export TODO=~/Dropbox/todo.txt
 
 # Aliases for awesomeness
