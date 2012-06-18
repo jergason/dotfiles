@@ -2,13 +2,15 @@ set nocompatible
 syntax enable
 set encoding=utf-8
 
+" Load all plugins with pathogen
 call pathogen#infect()
 call pathogen#helptags()
+
 filetype plugin indent on       " load file type plugins + indentation
 au FileType python set softtabstop=4 tabstop=4 shiftwidth=4 textwidth=0
 set showcmd                     " display incomplete commands
 
-set t_Co=256 " 256 colors for terminal
+" Color stuff
 set background=dark
 colorscheme molokai
 
@@ -16,11 +18,14 @@ colorscheme molokai
 set number
 set cursorline
 
+" Show a vertical line at 80 characters
+set cc=80
+
 " Allow background buffers without writing to them,
 " and save marks/undo for background buffers.
 set hidden
 
-"" Whitespace
+" Whitespace
 set nowrap                      " don't wrap lines
 set tabstop=2                   " a tab is two spaces
 set shiftwidth=2
@@ -43,7 +48,7 @@ set dir=~/.vim/tmp
 set backupdir=~/.vim/tmp
 
 
-" statusline setup
+" statusline
 " see :help statusline for more info on these options
 " always show status line
 set laststatus=2
@@ -84,8 +89,10 @@ nnoremap <leader>w :%s/\s\+$//e<CR>
 " highlighted anymore. From Gary Bernhardt of Destroy All Software
 nnoremap <CR> :nohlsearch<cr>
 
-" remap coffeescript compilation
+" CoffeeScript compilation
+" Compile a highlighted section of code
 vmap <leader>c <esc>:'<,'>:CoffeeCompile<CR>
+" Compile the entire file if nothing is highlighted
 map <leader>c :CoffeeCompile<CR>
 
 " compile the whole coffeescript file and jump to a line
@@ -94,7 +101,7 @@ map <leader>c :CoffeeCompile<CR>
 command -nargs=1 C CoffeeCompile | :<args>
 
 
-" Plugin Setup Section
+" Plugin Setup
 " ********************
 
 " Setup ctrlp.vim
