@@ -14,3 +14,4 @@ git:
   molokai: git://github.com/tomasr/molokai.git
   vim-golang: git://github.com/jnwhiteh/vim-golang.git
   vim-stylus: git://github.com/wavded/vim-stylus.git
+  nginx.vim: git://github.com/vim-scripts/nginx.vim.git
