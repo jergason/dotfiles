@@ -19,7 +19,9 @@ set number
 set cursorline
 
 " Show a vertical line at 80 characters
-set cc=80
+if exists("cc")
+  set cc=80
+endif
 
 " Allow background buffers without writing to them,
 " and save marks/undo for background buffers.

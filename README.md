@@ -16,3 +16,4 @@ I don't have to worry about keeping them in my repository.
 ## TODO:
 * Fix some problems on Mac OS X systems without homebrew
 * Fix some problems with systems without RVM
+* Remove Ruby and Rake dependencies for installation
