@@ -19,8 +19,10 @@ set number
 set cursorline
 
 " Show a vertical line at 80 characters
-if exists("cc")
+if exists('+colorcolumn')
   set cc=80
+else
+  au BufWinEnter * let w:m2=matchadd('ErrorMsg', '\%>80v.\+', -1)
 endif
 
 " Allow background buffers without writing to them,
