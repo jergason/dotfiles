@@ -23,9 +23,9 @@ alias ll="ls -alh"
 alias ls="ls -G" # colors in ls
 alias pp='python -mjson.tool' #json pretty printing
 
-#TODO: put guards on rvm and brew stuff
 # See http://collectiveidea.com/blog/archives/2011/08/02/command-line-feedback-from-rvm-and-git/ for where this came from
 [[ -r $rvm_path/scripts/completion ]] && . $rvm_path/scripts/completion # for RVM completion
+
 
 # Git completion
 if [[ "$platform" == 'freebsd' ]]; then
@@ -36,7 +36,15 @@ elif [[ "$platform" == 'linux' ]]; then
   fi
 fi
 
-export PS1="\`if [ \$? = 0 ]; then echo \[\e[33m\]^_^\[\e[0m\]; else echo \[\e[31m\]ಠ_ಠ\[\e[0m\]; fi\` \[\033[01;34m\]\$(~/.rvm/bin/rvm-prompt) \[\033[01;32m\]\w\[\033[00;33m\]\$(__git_ps1 \" (%s)\") \[\033[01;36m\]λ\[\033[00m\] "
+# RVM version info in path
+if [[ -r ~/.rvm/bin/rvm-prompt ]]; then
+  promptChunk="\$(~/.rvm/bin/rvm-prompt)"
+  echo "$promptChunk"
+else
+  promptChunk=""
+fi
+
+export PS1="\`if [ \$? = 0 ]; then echo \[\e[33m\]^_^\[\e[0m\]; else echo \[\e[31m\]ಠ_ಠ\[\e[0m\]; fi\` \[\033[01;34m\]$promptChunk \[\033[01;32m\]\w\[\033[00;33m\]\$(__git_ps1 \" (%s)\") \[\033[01;36m\]λ\[\033[00m\] "
 
 set keymap vi
 set -o vi
