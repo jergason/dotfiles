@@ -1,0 +1,17 @@
+# readline config
+
+# case-insensitive completion
+set completion-ignore-case on
+
+# more-like comppletion
+set page-completions on
+
+# don't ring bell if have possible completions
+set show-all-if-ambiguous on
+set show-all-if-unmodified on
+
+# show file type in completion list
+set visible-stats on
+
+set editing-mode vi
+
