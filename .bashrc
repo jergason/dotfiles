@@ -39,7 +39,6 @@ fi
 # RVM version info in path
 if [[ -r ~/.rvm/bin/rvm-prompt ]]; then
   promptChunk="\$(~/.rvm/bin/rvm-prompt)"
-  echo "$promptChunk"
 else
   promptChunk=""
 fi
