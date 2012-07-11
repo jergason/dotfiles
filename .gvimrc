@@ -11,7 +11,7 @@ set guioptions-=l
 set guioptions-=r
 
 if has("gui_gtk2")
-  set guifont=Monspace\ 13
+  set guifont=Monospace\ 13
 else
   set guifont=Inconsolata:h17
 endif
