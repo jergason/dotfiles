@@ -10,7 +10,11 @@ set guioptions-=R
 set guioptions-=l
 set guioptions-=r
 
-set guifont=Inconsolata:h17
+if has("gui_gtk2")
+  set guifont=Monospace\ 13
+else
+  set guifont=Inconsolata:h17
+endif
 
 
 " Lazy redraw, for MacVim speedups
