@@ -52,6 +52,11 @@ if [[ -f ~/.rvm/scripts/rvm ]]; then
   [[ -s ~/.rvm/scripts/rvm ]] && source ~/.rvm/scripts/rvm  # This loads RVM into a shell session.
 fi
 
+# nvm setup
+if [[ -r ~/nvm/nvm.sh ]]; then
+  source ~/nvm/nvm.sh
+fi
+
 function todo() {
   # $# is the number of parameters passed in
   if [[ $# == "0" ]];
