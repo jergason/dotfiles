@@ -1,0 +1,13 @@
+# ack ignores file types it doesn't know about by default
+# make ack recognize more file types
+
+--type-set=go=.go
+--type-set=ejs=.ejs
+--type-set=less=.less
+--type-add=js=Jakefile
+--type-set=coffee=.coffee
+--type-set=json=.json
+--type-set=stylus=.styl
+--type-set=crontab=.crontab
+--ignore-dir=node_modules
+--ignore-dir=_site
