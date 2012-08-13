@@ -17,3 +17,5 @@ I don't have to worry about keeping them in my repository.
 * Fix some problems on Mac OS X systems without homebrew
 * Fix some problems with systems without RVM
 * Remove Ruby and Rake dependencies for installation
+* Also look at curl dependency, since it isn't installed by default on Ubuntu
+  desktop.

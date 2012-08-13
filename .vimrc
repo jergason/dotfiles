@@ -7,7 +7,6 @@ call pathogen#infect()
 call pathogen#helptags()
 
 filetype plugin indent on       " load file type plugins + indentation
-au FileType python set softtabstop=4 tabstop=4 shiftwidth=4 textwidth=0
 set showcmd                     " display incomplete commands
 
 " Color stuff
@@ -114,6 +113,10 @@ let g:ctrlp_custom_ignore = {
   \ 'dir': '\.git$\|\.hg$\|\.svn$',
   \ 'file': '\.o$\|\.exe$\|\.bin$'
   \ }
+
+
+au FileType python set softtabstop=4 tabstop=4 shiftwidth=4 textwidth=0
+au FileType go set softtabstop=4 tabstop=4 shiftwidth=4 textwidth=0
 
 " .json files are javascript
 au BufRead,BufNewFile *.json set ft=javascript

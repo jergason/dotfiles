@@ -8,6 +8,10 @@ elif [[ "$unamestr" == "Darwin" ]]; then
 fi
 
 export PATH=/usr/local/bin:/usr/local/sbin:$PATH
+
+# add homebrew python path
+export PATH=/usr/local/share/python:$PATH
+
 if [[ "$platform" == 'freebsd' ]]; then
   export EDITOR=mvim
 else
@@ -16,7 +20,6 @@ fi
 export GNUTERM='x11'
 export NODE_PATH=/usr/local/lib/node_modules:/usr/local/lib/node:$NODE_PATH
 
-export TODO=~/Dropbox/todo.txt
 
 # Aliases for awesomeness
 alias ll="ls -alh"
@@ -25,6 +28,9 @@ alias pp='python -mjson.tool' #json pretty printing
 
 # See http://collectiveidea.com/blog/archives/2011/08/02/command-line-feedback-from-rvm-and-git/ for where this came from
 [[ -r $rvm_path/scripts/completion ]] && . $rvm_path/scripts/completion # for RVM completion
+
+# tmux alias to make sure it supports 256 colors
+alias tmux="TERM=screen-256color tmux"
 
 
 # Git completion
@@ -57,23 +63,8 @@ if [[ -r ~/nvm/nvm.sh ]]; then
   source ~/nvm/nvm.sh
 fi
 
-function todo() {
-  # $# is the number of parameters passed in
-  if [[ $# == "0" ]];
-    then
-      cat $TODO;
-    else
-      # $@ is a string containing all parameters
-      echo "• $@" >> $TODO;
-  fi
-}
-
-function todone() {
-  # $@ is all the arguments passed in.
-  # not sure what d is. Flag to delete anything that matches?
-  sed -i -e "/$@/d" $TODO;
-}
-
+# for badoop (https://github.com/jergason/badoop
+export TODO=~/Dropbox/todo.txt
 
 #Optionally include a .bashrc.local for some local stuff
 if [[ -f ~/.bashrc.local ]]; then
