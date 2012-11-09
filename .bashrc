@@ -20,6 +20,9 @@ fi
 export GNUTERM='x11'
 export NODE_PATH=/usr/local/lib/node_modules:/usr/local/lib/node:$NODE_PATH
 
+# Use local ackrc files if they exist
+export ACKRC=".ackrc"
+
 
 # Aliases for awesomeness
 alias ll="ls -alh"
@@ -33,9 +36,9 @@ alias pp='python -mjson.tool' #json pretty printing
 alias tmux="TERM=screen-256color tmux"
 
 
-# Git completion
+# bash completion
 if [[ "$platform" == 'freebsd' ]]; then
-  if [[ -f `brew --prefix`/etc/bash_completion.d/git-completion.bash ]]; then source `brew --prefix`/etc/bash_completion.d/git-completion.bash; fi # for Git completion
+  if [[ -f `brew --prefix`/etc/bash_completion ]]; then source `brew --prefix`/etc/bash_completion; fi # for Git completion
 elif [[ "$platform" == 'linux' ]]; then
   if [[ -e "/etc/bash_completion.d/git" ]]; then
     source /etc/bash_completion.d/git
