@@ -82,6 +82,8 @@ inoremap jj <esc>
 " use leader leader to jump to the previously edited file
 nnoremap <leader><leader> <C-^>
 
+nnoremap <leader>p <C-W><C-P>
+
 " Easier opening and closing of nerdtree
 nnoremap <leader>t :NERDTreeToggle<CR>
 
