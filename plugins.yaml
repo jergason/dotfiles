@@ -17,3 +17,4 @@ git:
   nginx.vim: git://github.com/vim-scripts/nginx.vim.git
   hemisu: git://github.com/noahfrederick/Hemisu.git
   fugitive: git://github.com/tpope/vim-fugitive.git
+  vim-handlebars: git://github.com/nono/vim-handlebars.git
