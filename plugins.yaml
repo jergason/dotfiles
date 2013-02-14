@@ -19,3 +19,4 @@ git:
   fugitive: git://github.com/tpope/vim-fugitive.git
   vim-handlebars: git://github.com/nono/vim-handlebars.git
   vim-rust: git://github.com/reusee/vim.rust.git
+  vim-clojure: git://github.com/vim-scripts/VimClojure.git
