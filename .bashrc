@@ -23,6 +23,8 @@ export NODE_PATH=/usr/local/lib/node_modules:/usr/local/lib/node:$NODE_PATH
 # Use local ackrc files if they exist
 export ACKRC=".ackrc"
 
+export GOPATH=~/golang/
+
 
 # Aliases for awesomeness
 alias ll="ls -alh"

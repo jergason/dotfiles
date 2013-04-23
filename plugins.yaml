@@ -21,3 +21,6 @@ git:
   vim-rust: git://github.com/reusee/vim.rust.git
   vim-clojure-static: git://github.com/guns/vim-clojure-static.git
   foreplay: git://github.com/tpope/vim-foreplay.git
+  bclear: git://github.com/vim-scripts/bclear.git
+  summerfruit256: git://github.com/vim-scripts/summerfruit256.vim.git
+  obsession: git://github.com/tpope/vim-obsession.git

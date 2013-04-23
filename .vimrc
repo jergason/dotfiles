@@ -81,7 +81,11 @@ inoremap jj <esc>
 " use leader leader to jump to the previously edited file
 nnoremap <leader><leader> <C-^>
 
+" jump back and forth between previous panes
 nnoremap <leader>p <C-W><C-P>
+
+" toggle paste mode off and on
+nnoremap <leader>o :set paste!<CR>
 
 " Easier opening and closing of nerdtree
 nnoremap <leader>t :NERDTreeToggle<CR>
@@ -111,13 +115,16 @@ command -nargs=1 C CoffeeCompile | :<args>
 " Setup ctrlp.vim
 " Ignore version control and binary files
 let g:ctrlp_custom_ignore = {
-  \ 'dir': '\.git$\|\.hg$\|\.svn$',
+  \ 'dir': '\.git$\|\.hg$\|\.svn$\|node_modules$',
   \ 'file': '\.o$\|\.exe$\|\.bin$'
   \ }
 
 
 au FileType python set softtabstop=4 tabstop=4 shiftwidth=4 textwidth=0
 au FileType go set softtabstop=4 tabstop=4 shiftwidth=4 textwidth=0
+" Automatically call gofmt on golang files when saving as per
+" http://stackoverflow.com/questions/10969366/vim-automatically-formatting-golang-source-code-when-saving
+au FileType go au BufWritePre <buffer> Fmt
 
 " .json files are javascript
 au BufRead,BufNewFile *.json set ft=javascript
