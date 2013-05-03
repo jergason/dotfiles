@@ -1,9 +1,7 @@
-require 'yaml'
-
 task :default => [:install_vim, :install_dotfiles]
 
 desc "Install vim and dotfiles"
-task :install => [:install_vim_plugins, :install_dotfiles]
+task :install => [:install_dotfiles, :install_vim]
 
 desc "Make symlinks from all dotfiles in this directory to ~"
 task :install_dotfiles do
@@ -33,25 +31,16 @@ end
 desc "Install .vim directory by pulling them from my githubs."
 task :install_vim do
   `rm -rf #{vim_dir}`
-  `mkdir -p #{File.join(vim_dir, 'tmp')}`
+  `mkdir -p #{File.join(vim_dir, 'tmp')}` # for tmp and swap files
+  Rake::Task[:install_vundle].invoke
+end
 
-  Rake::Task[:install_pathogen].invoke
+desc "Install vundle"
+task :install_vundle do
+  puts "installing vundle"
   `mkdir -p #{File.join(vim_dir, 'bundle')}`
-  plugin_list = YAML::load(File.open('plugins.yaml'))
-  plugin_list["git"].each do |name, git_url|
-    install_plugin(git_url, name)
-  end
-end
-
-desc "Install pathogen"
-task :install_pathogen do
-  puts "installing pathogen"
-  `mkdir -p #{File.join(vim_dir, 'autoload')}`
-  `curl -so #{File.join(vim_dir, 'autoload', 'pathogen.vim')} https://raw.github.com/tpope/vim-pathogen/HEAD/autoload/pathogen.vim`
-end
-
-def install_plugin(github_url, plugin_name)
-  `git clone #{github_url} #{File.join(vim_dir, 'bundle', plugin_name)}`
+  `git clone git@github.com:gmarik/vundle.git #{File.join(vim_dir, 'bundle', 'vundle')}`
+  `vim +BundleInstall +qall`
 end
 
 def vim_dir

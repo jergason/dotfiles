@@ -2,16 +2,53 @@ set nocompatible
 syntax enable
 set encoding=utf-8
 
-" Load all plugins with pathogen
-call pathogen#infect()
-call pathogen#helptags()
+" Load Vundle plugins
+filetype off " required for vundle
+set rtp+=~/.vim/bundle/vundle
+call vundle#rc()
+
+" manage bundle w/ bundle. Required
+Bundle 'gmarik/vundle'
+
+" My bundles from github
+" weird hack to get around it being my repo and asking for username pass on
+" https
+Bundle 'git://github.com/jergason/sniptmate.vim.git'
+Bundle 'scrooloose/nerdtree'
+Bundle 'scrooloose/nerdcommenter'
+Bundle 'altercation/vim-colors-solarized.git'
+Bundle 'tpope/vim-surround'
+Bundle 'tpope/vim-markdown'
+Bundle 'pangloss/vim-javascript'
+Bundle 'mileszs/ack.vim'
+Bundle 'ervandew/supertab'
+Bundle 'kchmck/vim-coffee-script'
+Bundle 'kien/ctrlp.vim'
+Bundle 'tomasr/molokai'
+Bundle 'jnwhiteh/vim-golang'
+Bundle 'wavded/vim-stylus'
+Bundle 'noahfrederick/Hemisu'
+Bundle 'tpope/vim-fugitive'
+Bundle 'nono/vim-handlebars'
+Bundle 'guns/vim-clojure-static'
+Bundle 'tpope/vim-foreplay'
+Bundle 'tpope/vim-obsession'
+
+" vim-scripts repos don't need username
+Bundle 'nginx.vim'
+Bundle 'bclear'
+Bundle 'summerfruit256.vim'
+
 
 filetype plugin indent on       " load file type plugins + indentation
 set showcmd                     " display incomplete commands
 
+" make copy paste work with tmux
+set clipboard=unnamed
 " Color stuff
 set background=dark
-colorscheme molokai
+let g:solarized_termcolors=256
+silent! colorscheme solarized
 
 " Gutter
 set number
