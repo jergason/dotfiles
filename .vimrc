@@ -11,9 +11,11 @@ call vundle#rc()
 Bundle 'gmarik/vundle'
 
 " My bundles from github
-" weird hack to get around it being my repo and asking for username pass on
-" https
-Bundle 'git://github.com/jergason/sniptmate.vim.git'
+
+Bundle 'MarcWeber/vim-addon-mw-utils'
+Bundle 'tomtom/tlib_vim'
+Bundle 'garbas/vim-snipmate'
+Bundle 'jergason/gocode-vimscripts'
 Bundle 'scrooloose/nerdtree'
 Bundle 'scrooloose/nerdcommenter'
 Bundle 'altercation/vim-colors-solarized.git'
@@ -48,6 +50,9 @@ set clipboard=unnamed
 " Color stuff
 set background=dark
 let g:solarized_termcolors=256
+
+" make it not yell when first running BundleInstall and solarized doesn't
+" exist yet
 silent! colorscheme solarized
 
 " Gutter
@@ -158,7 +163,7 @@ let g:ctrlp_custom_ignore = {
 
 
 au FileType python set softtabstop=4 tabstop=4 shiftwidth=4 textwidth=0
-au FileType go set softtabstop=4 tabstop=4 shiftwidth=4 textwidth=0
+au FileType go set softtabstop=4 tabstop=4 shiftwidth=4 textwidth=0 noexpandtab
 " Automatically call gofmt on golang files when saving as per
 " http://stackoverflow.com/questions/10969366/vim-automatically-formatting-golang-source-code-when-saving
 au FileType go au BufWritePre <buffer> Fmt

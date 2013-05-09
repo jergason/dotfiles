@@ -7,6 +7,13 @@ elif [[ "$unamestr" == "Darwin" ]]; then
   platform='freebsd'
 fi
 
+# golang env vars setup
+export GOPATH=~/golang/
+export GOBIN=$GOPATH/bin/
+
+# add GOBIN to path
+export PATH=$GOBIN:$PATH
+
 export PATH=/usr/local/bin:/usr/local/sbin:$PATH
 
 # add homebrew python path
@@ -23,7 +30,6 @@ export NODE_PATH=/usr/local/lib/node_modules:/usr/local/lib/node:$NODE_PATH
 # Use local ackrc files if they exist
 export ACKRC=".ackrc"
 
-export GOPATH=~/golang/
 
 
 # Aliases for awesomeness
