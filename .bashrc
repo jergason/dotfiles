@@ -8,11 +8,13 @@ elif [[ "$unamestr" == "Darwin" ]]; then
 fi
 
 # golang env vars setup
-export GOPATH=~/golang/
-export GOBIN=$GOPATH/bin/
+export GOPATH=~/golang
+export GOROOT=$GOPATH/go
+export GOBIN=$GOPATH/bin
 
 # add GOBIN to path
 export PATH=$GOBIN:$PATH
+export PATH=$GOROOT/bin:$PATH
 
 export PATH=/usr/local/bin:/usr/local/sbin:$PATH
 
@@ -37,9 +39,6 @@ alias ll="ls -alh"
 alias ls="ls -G" # colors in ls
 alias pp='python -mjson.tool' #json pretty printing
 
-# See http://collectiveidea.com/blog/archives/2011/08/02/command-line-feedback-from-rvm-and-git/ for where this came from
-[[ -r $rvm_path/scripts/completion ]] && . $rvm_path/scripts/completion # for RVM completion
-
 # tmux alias to make sure it supports 256 colors
 alias tmux="TERM=screen-256color tmux"
 
@@ -53,14 +52,7 @@ elif [[ "$platform" == 'linux' ]]; then
   fi
 fi
 
-# RVM version info in path
-if [[ -r ~/.rvm/bin/rvm-prompt ]]; then
-  promptChunk="\$(~/.rvm/bin/rvm-prompt)"
-else
-  promptChunk=""
-fi
-
-export PS1="\`if [ \$? = 0 ]; then echo \[\e[33m\]^_^\[\e[0m\]; else echo \[\e[31m\]ಠ_ಠ\[\e[0m\]; fi\` \[\033[01;34m\]$promptChunk \[\033[01;32m\]\w\[\033[00;33m\]\$(__git_ps1 \" (%s)\") \[\033[01;36m\]λ\[\033[00m\] "
+export PS1="\`if [ \$? = 0 ]; then echo \[\e[33m\]^_^\[\e[0m\]; else echo \[\e[31m\]ಠ_ಠ\[\e[0m\]; fi\` \[\033[01;34m\] \[\033[01;32m\]\w\[\033[00;33m\]\$(__git_ps1 \" (%s)\") \[\033[01;36m\]λ\[\033[00m\] "
 
 set keymap vi
 set -o vi

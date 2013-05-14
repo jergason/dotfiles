@@ -1,7 +1,7 @@
-task :default => [:install_vim, :install_dotfiles]
+task :default => [:install_gocode, :install_vim, :install_dotfiles]
 
 desc "Install vim and dotfiles"
-task :install => [:install_dotfiles, :install_vim]
+task :install => [:install_gocode,:install_vim, :install_dotfiles]
 
 desc "Make symlinks from all dotfiles in this directory to ~"
 task :install_dotfiles do
@@ -27,6 +27,10 @@ task :install_dotfiles do
 end
 
 
+desc "Install gocode for golang code completion"
+taks :install_gocode do
+  `go get -u github.com/nsf/gocode`
+end
 
 desc "Install .vim directory by pulling them from my githubs."
 task :install_vim do
