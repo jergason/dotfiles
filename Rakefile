@@ -28,7 +28,7 @@ end
 
 
 desc "Install gocode for golang code completion"
-taks :install_gocode do
+task :install_gocode do
   `go get -u github.com/nsf/gocode`
 end
 
