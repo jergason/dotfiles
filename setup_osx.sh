@@ -198,7 +198,7 @@ echo "Show the ~/Library folder"
 chflags nohidden ~/Library
 
 echo "Show hidden files in Finder"
-defaults write com.apple.finder AppleShowAllFiles TRUE
+defaults write com.apple.finder AppleShowAllFiles -boolean true
 
 #echo "Disable local Time Machine backups"
 #hash tmutil &> /dev/null && sudo tmutil disablelocal
