@@ -54,12 +54,13 @@ fi
 
 export PS1="\`if [ \$? = 0 ]; then echo \[\e[33m\]^_^\[\e[0m\]; else echo \[\e[31m\]ಠ_ಠ\[\e[0m\]; fi\` \[\033[01;34m\] \[\033[01;32m\]\w\[\033[00;33m\]\$(__git_ps1 \" (%s)\") \[\033[01;36m\]λ\[\033[00m\] "
 
+# rbenv setup
+if [[ -r /usr/local/bin/rbenv ]]; then
+  eval "$(rbenv init -)"
+fi
+
 set keymap vi
 set -o vi
-
-if [[ -f ~/.rvm/scripts/rvm ]]; then
-  [[ -s ~/.rvm/scripts/rvm ]] && source ~/.rvm/scripts/rvm  # This loads RVM into a shell session.
-fi
 
 # nvm setup
 if [[ -r ~/nvm/nvm.sh ]]; then
@@ -73,5 +74,3 @@ export TODO=~/Dropbox/todo.txt
 if [[ -f ~/.bashrc.local ]]; then
   source ~/.bashrc.local
 fi
-
-PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
