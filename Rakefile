@@ -1,7 +1,4 @@
-task :default => [:install_gocode, :install_vim, :install_dotfiles]
-
-desc "Install vim and dotfiles"
-task :install => [:install_gocode,:install_vim, :install_dotfiles]
+task :default => [:install_vim, :install_dotfiles]
 
 desc "Make symlinks from all dotfiles in this directory to ~"
 task :install_dotfiles do
