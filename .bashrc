@@ -63,11 +63,12 @@ set keymap vi
 set -o vi
 
 # nvm setup
-if [[ -r ~/nvm/nvm.sh ]]; then
-  source ~/nvm/nvm.sh
+NVMPATH=~/.nvm/nvm.sh
+if [[ -r $NVMPATH ]]; then
+  source $NVMPATH
 fi
 
-# for badoop (https://github.com/jergason/badoop
+# for badoop (https://github.com/jergason/badoop)
 export TODO=~/Dropbox/todo.txt
 
 #Optionally include a .bashrc.local for some local stuff
