@@ -32,14 +32,15 @@ Bundle 'wavded/vim-stylus'
 Bundle 'noahfrederick/Hemisu'
 Bundle 'tpope/vim-fugitive'
 Bundle 'nono/vim-handlebars'
-Bundle 'guns/vim-clojure-static'
 Bundle 'tpope/vim-foreplay'
 Bundle 'tpope/vim-obsession'
+Bundle 'derekwyatt/vim-scala'
 
 " vim-scripts repos don't need username
 Bundle 'nginx.vim'
 Bundle 'bclear'
 Bundle 'summerfruit256.vim'
+Bundle 'VimClojure'
 
 
 filetype plugin indent on       " load file type plugins + indentation
