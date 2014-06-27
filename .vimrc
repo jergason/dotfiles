@@ -34,7 +34,10 @@ Bundle 'tpope/vim-fugitive'
 Bundle 'nono/vim-handlebars'
 Bundle 'tpope/vim-foreplay'
 Bundle 'tpope/vim-obsession'
+Bundle 'tpope/vim-rails'
 Bundle 'derekwyatt/vim-scala'
+Bundle 'digitaltoad/vim-jade'
+Bundle 'Shutnik/jshint2.vim'
 
 " vim-scripts repos don't need username
 Bundle 'nginx.vim'
@@ -176,3 +179,8 @@ au BufRead,BufNewFile *.json set ft=javascript
 au BufRead,BufNewFile {Gemfile,Rakefile,Vagrantfile,config.ru,*.gemspec} set ft=ruby
 
 au BufRead,BufNewFile *.java set ft=java
+
+""" jshint2 config stuff
+" run jshint on save
+let jshint2_save = 1
+let jshint2_command = '`which jsxhint`'
