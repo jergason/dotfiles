@@ -40,8 +40,8 @@ desc "Install vundle"
 task :install_vundle do
   puts "installing vundle"
   `mkdir -p #{File.join(vim_dir, 'bundle')}`
-  `git clone https://github.com/gmarik/vundle.git #{File.join(vim_dir, 'bundle', 'vundle')}`
-  `vim +BundleInstall +qall`
+  `git clone https://github.com/gmarik/Vundle.vim #{File.join(vim_dir, 'bundle', 'Vundle.vim')}`
+  `vim +PluginInstall +qall`
 end
 
 def vim_dir

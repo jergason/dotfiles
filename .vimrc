@@ -3,48 +3,69 @@ syntax enable
 set encoding=utf-8
 
 " Load Vundle plugins
-filetype off " required for vundle
-set rtp+=~/.vim/bundle/vundle
-call vundle#rc()
+" required for Vundle
+filetype off
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
 
-" manage bundle w/ bundle. Required
-Bundle 'gmarik/vundle'
+" manage Vundle w/ Vundle. Required
+Plugin 'gmarik/Vundle.vim'
 
 " My bundles from github
 
-Bundle 'MarcWeber/vim-addon-mw-utils'
-Bundle 'tomtom/tlib_vim'
-Bundle 'garbas/vim-snipmate'
-Bundle 'jergason/gocode-vimscripts'
-Bundle 'scrooloose/nerdtree'
-Bundle 'scrooloose/nerdcommenter'
-Bundle 'altercation/vim-colors-solarized.git'
-Bundle 'tpope/vim-surround'
-Bundle 'tpope/vim-markdown'
-Bundle 'pangloss/vim-javascript'
-Bundle 'mileszs/ack.vim'
-Bundle 'ervandew/supertab'
-Bundle 'kchmck/vim-coffee-script'
-Bundle 'kien/ctrlp.vim'
-Bundle 'tomasr/molokai'
-Bundle 'jnwhiteh/vim-golang'
-Bundle 'wavded/vim-stylus'
-Bundle 'noahfrederick/Hemisu'
-Bundle 'tpope/vim-fugitive'
-Bundle 'nono/vim-handlebars'
-Bundle 'tpope/vim-foreplay'
-Bundle 'tpope/vim-obsession'
-Bundle 'tpope/vim-rails'
-Bundle 'derekwyatt/vim-scala'
-Bundle 'digitaltoad/vim-jade'
-Bundle 'Shutnik/jshint2.vim'
+Plugin 'MarcWeber/vim-addon-mw-utils'
+Plugin 'tomtom/tlib_vim'
+Plugin 'garbas/vim-snipmate'
+Plugin 'jergason/gocode-vimscripts'
+Plugin 'scrooloose/nerdtree'
+Plugin 'scrooloose/nerdcommenter'
+Plugin 'tpope/vim-surround'
+Plugin 'mileszs/ack.vim'
+Plugin 'ervandew/supertab'
+Plugin 'kien/ctrlp.vim'
+Plugin 'jnwhiteh/vim-golang'
+Plugin 'tpope/vim-fugitive'
+Plugin 'tpope/vim-obsession'
+Plugin 'scrooloose/syntastic'
+Plugin 'godlygeek/tabular'
+Plugin 'plasticboy/vim-markdown'
+
+" javascript/web
+Plugin 'mxw/vim-jsx'
+Plugin 'Shutnik/jshint2.vim'
+Plugin 'nono/vim-handlebars'
+Plugin 'digitaltoad/vim-jade'
+Plugin 'wavded/vim-stylus'
+Plugin 'pangloss/vim-javascript'
+Plugin 'kchmck/vim-coffee-script'
+
+
+" clojure
+Plugin 'tpope/vim-fireplace'
+Plugin 'tpope/vim-leiningen'
+Plugin 'tpope/vim-classpath'
+Plugin 'guns/vim-clojure-static'
+Plugin 'kien/rainbow_parentheses.vim'
+
+" themes
+Plugin 'tomasr/molokai'
+Plugin 'chriskempson/base16-vim'
+Plugin 'chriskempson/tomorrow-theme', {'rtp': 'vim/'}
+Plugin 'noahfrederick/Hemisu'
+Plugin 'altercation/vim-colors-solarized.git'
+Plugin 'bclear'
+Plugin 'summerfruit256.vim'
+
+" haskell
+Plugin 'dag/vim2hs'
+Plugin 'bitc/vim-hdevtools'
 
 " vim-scripts repos don't need username
-Bundle 'nginx.vim'
-Bundle 'bclear'
-Bundle 'summerfruit256.vim'
-Bundle 'VimClojure'
+Plugin 'nginx.vim'
+Plugin 'SyntaxRange'
 
+call vundle#end()
 
 filetype plugin indent on       " load file type plugins + indentation
 set showcmd                     " display incomplete commands
@@ -52,6 +73,7 @@ set showcmd                     " display incomplete commands
 " make copy paste work with tmux
 set clipboard=unnamed
 " Color stuff
+
 set background=dark
 let g:solarized_termcolors=256
 
@@ -65,9 +87,9 @@ set cursorline
 
 " Show a vertical line at 80 characters
 if exists('+colorcolumn')
-  set cc=80
+ set cc=80
 else
-  au BufWinEnter * let w:m2=matchadd('ErrorMsg', '\%>80v.\+', -1)
+ au BufWinEnter * let w:m2=matchadd('ErrorMsg', '\%>80v.\+', -1)
 endif
 
 " Allow background buffers without writing to them,
@@ -81,6 +103,9 @@ set shiftwidth=2
 set softtabstop=2
 set expandtab                   " use spaces, not tabs
 set backspace=indent,eol,start  " backspace through everything in insert mode
+set shiftround " round indentation with > and < to multiples of shiftwidth
+set nofoldenable " disable folding
+set autoread " automatically reload file when changed outside of vim
 
 " How to display tabs, trailing whitespace, and lines that extend to left of screen
 set listchars=tab:\ \ ,trail:·,extends:>,precedes:\<
@@ -111,13 +136,13 @@ set statusline+=%l/%L " current line / total lines
 set statusline+=\ %P " percentage through file
 
 function! StatusLineFileSize()
-  let size = getfsize(expand('%%:p'))
-  if (size < 1024)
-    return size . 'b '
-  else
-    let size = size / 1024
-    return size . 'k '
-  endif
+ let size = getfsize(expand('%%:p'))
+ if (size < 1024)
+   return size . 'b '
+ else
+   let size = size / 1024
+   return size . 'k '
+ endif
 endfunction
 
 " Mappings
@@ -154,20 +179,32 @@ map <leader>c :CoffeeCompile<CR>
 " Run with :C [line_number]
 command -nargs=1 C CoffeeCompile | :<args>
 
-
 " Plugin Setup
 " ********************
+
+" nerdtree
+" don't ask to delete buffer after file deleted
+let NERDTreeAutoDeleteBuffer = 1
+
+" nerdcommentor
+" better haskell comments
+let g:NERDCustomDelimiters = {
+    \ 'haskell': { 'left': '--' },
+    \ }
+
 
 " Setup ctrlp.vim
 " Ignore version control and binary files
 let g:ctrlp_custom_ignore = {
-  \ 'dir': '\.git$\|\.hg$\|\.svn$\|node_modules$',
-  \ 'file': '\.o$\|\.exe$\|\.bin$'
-  \ }
+ \ 'dir': '\.git$\|\.hg$\|\.svn$\|node_modules$',
+ \ 'file': '\.o$\|\.exe$\|\.bin$'
+ \ }
 
 
 au FileType python set softtabstop=4 tabstop=4 shiftwidth=4 textwidth=0
 au FileType go set softtabstop=4 tabstop=4 shiftwidth=4 textwidth=0 noexpandtab
+
+au FileType haskell set softtabstop=2 tabstop=2 shiftwidth=2 textwidth=0
 " Automatically call gofmt on golang files when saving as per
 " http://stackoverflow.com/questions/10969366/vim-automatically-formatting-golang-source-code-when-saving
 au FileType go au BufWritePre <buffer> Fmt
@@ -180,7 +217,19 @@ au BufRead,BufNewFile {Gemfile,Rakefile,Vagrantfile,config.ru,*.gemspec} set ft=
 
 au BufRead,BufNewFile *.java set ft=java
 
-""" jshint2 config stuff
-" run jshint on save
-let jshint2_save = 1
-let jshint2_command = '`which jsxhint`'
+""" syntastic stuff
+" use eslint for javascript
+let g:syntastic_javascript_checkers = ["eslint"]
+" check syntax on file open
+let g:syntastic_check_on_open=1
+" close on no errors, open on errors
+let g:syntastic_aggregate_errors = 1
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list=2
+let g:syntastic_haskell_checkers = ['hdevtools']
+
+""" turn on rainbow parens always!
+au VimEnter * RainbowParenthesesToggle
+au Syntax * RainbowParenthesesLoadRound
+au Syntax * RainbowParenthesesLoadSquare
+au Syntax * RainbowParenthesesLoadBraces
