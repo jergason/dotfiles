@@ -12,17 +12,14 @@ call vundle#begin()
 " manage Vundle w/ Vundle. Required
 Plugin 'gmarik/Vundle.vim'
 
-" My bundles from github
-
 Plugin 'MarcWeber/vim-addon-mw-utils'
 Plugin 'tomtom/tlib_vim'
-Plugin 'garbas/vim-snipmate'
 Plugin 'jergason/gocode-vimscripts'
 Plugin 'scrooloose/nerdtree'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'tpope/vim-surround'
-Plugin 'mileszs/ack.vim'
 Plugin 'ervandew/supertab'
+Plugin 'mileszs/ack.vim'
 Plugin 'kien/ctrlp.vim'
 Plugin 'jnwhiteh/vim-golang'
 Plugin 'tpope/vim-fugitive'
@@ -30,6 +27,7 @@ Plugin 'tpope/vim-obsession'
 Plugin 'scrooloose/syntastic'
 Plugin 'godlygeek/tabular'
 Plugin 'plasticboy/vim-markdown'
+Plugin 'terryma/vim-multiple-cursors'
 
 " javascript/web
 Plugin 'mxw/vim-jsx'
@@ -39,6 +37,12 @@ Plugin 'digitaltoad/vim-jade'
 Plugin 'wavded/vim-stylus'
 Plugin 'pangloss/vim-javascript'
 Plugin 'kchmck/vim-coffee-script'
+Plugin 'leafgarland/typescript-vim'
+"Plugin 'facebook/vim-flow'
+
+" snippets
+Plugin 'SirVer/ultisnips'
+Plugin 'honza/vim-snippets'
 
 
 " clojure
@@ -56,6 +60,7 @@ Plugin 'noahfrederick/Hemisu'
 Plugin 'altercation/vim-colors-solarized.git'
 Plugin 'bclear'
 Plugin 'summerfruit256.vim'
+Plugin 'nanotech/jellybeans.vim'
 
 " haskell
 Plugin 'dag/vim2hs'
@@ -64,6 +69,7 @@ Plugin 'bitc/vim-hdevtools'
 " vim-scripts repos don't need username
 Plugin 'nginx.vim'
 Plugin 'SyntaxRange'
+
 
 call vundle#end()
 
@@ -130,8 +136,10 @@ set statusline+=[%{strlen(&fenc)?&fenc:'none'}, " file encoding
 set statusline+=%{&ff}] " file format
 set statusline+=%m " modified flag
 set statusline+=%y " file type
+set statusline+=%{fugitive#statusline()} " current branch from fugitive
 set statusline+=%= " separator between right and left items
 set statusline+=%{StatusLineFileSize()} " number of bytes or K in file
+set statusline+=col:%c\ 
 set statusline+=%l/%L " current line / total lines
 set statusline+=\ %P " percentage through file
 
@@ -155,6 +163,9 @@ nnoremap <leader><leader> <C-^>
 " jump back and forth between previous panes
 nnoremap <leader>p <C-W><C-P>
 
+" join lines together and remove whitespace between the newly joined lines
+nnoremap J Jdw
+
 " toggle paste mode off and on
 nnoremap <leader>o :set paste!<CR>
 
@@ -177,7 +188,7 @@ map <leader>c :CoffeeCompile<CR>
 " compile the whole coffeescript file and jump to a line
 " useful for debugging stack traces
 " Run with :C [line_number]
-command -nargs=1 C CoffeeCompile | :<args>
+command! -nargs=1 C CoffeeCompile | :<args>
 
 " Plugin Setup
 " ********************
@@ -200,28 +211,30 @@ let g:ctrlp_custom_ignore = {
  \ 'file': '\.o$\|\.exe$\|\.bin$'
  \ }
 
+au FileType python setlocal softtabstop=4 tabstop=4 shiftwidth=4 textwidth=0
 
-au FileType python set softtabstop=4 tabstop=4 shiftwidth=4 textwidth=0
-au FileType go set softtabstop=4 tabstop=4 shiftwidth=4 textwidth=0 noexpandtab
-
-au FileType haskell set softtabstop=2 tabstop=2 shiftwidth=2 textwidth=0
+au FileType go setlocal softtabstop=4 tabstop=4 shiftwidth=4 textwidth=0 noexpandtab
 " Automatically call gofmt on golang files when saving as per
 " http://stackoverflow.com/questions/10969366/vim-automatically-formatting-golang-source-code-when-saving
 au FileType go au BufWritePre <buffer> Fmt
 
-" .json files are javascript
-au BufRead,BufNewFile *.json set ft=javascript
+au FileType haskell setlocal softtabstop=2 tabstop=2 shiftwidth=2 textwidth=0
+
+au FileType mkd,text setlocal spell formatoptions=ntaq1 textwidth=80 wrapmargin=0 foldcolumn=10 columns=100 " prose settings
+
+" prose editing settings
+
 
 " These are all actually ruby files
-au BufRead,BufNewFile {Gemfile,Rakefile,Vagrantfile,config.ru,*.gemspec} set ft=ruby
+au BufRead,BufNewFile {Gemfile,Rakefile,Vagrantfile,config.ru,*.gemspec} setlocal ft=ruby
 
-au BufRead,BufNewFile *.java set ft=java
+au BufRead,BufNewFile *.java setlocal ft=java
 
 """ syntastic stuff
 " use eslint for javascript
-let g:syntastic_javascript_checkers = ["eslint"]
+"let g:syntastic_javascript_checkers = ["eslint"]
 " check syntax on file open
-let g:syntastic_check_on_open=1
+"let g:syntastic_check_on_open=1
 " close on no errors, open on errors
 let g:syntastic_aggregate_errors = 1
 let g:syntastic_always_populate_loc_list = 1
@@ -233,3 +246,5 @@ au VimEnter * RainbowParenthesesToggle
 au Syntax * RainbowParenthesesLoadRound
 au Syntax * RainbowParenthesesLoadSquare
 au Syntax * RainbowParenthesesLoadBraces
+let g:rbpt_max = 16
+let g:rbpt_loadcmd_toggle = 0
