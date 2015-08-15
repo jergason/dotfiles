@@ -28,6 +28,8 @@ Plugin 'scrooloose/syntastic'
 Plugin 'godlygeek/tabular'
 Plugin 'plasticboy/vim-markdown'
 Plugin 'terryma/vim-multiple-cursors'
+Plugin 'airblade/vim-gitgutter'
+Plugin 'aquach/vim-http-client'
 
 " javascript/web
 Plugin 'mxw/vim-jsx'
@@ -37,8 +39,13 @@ Plugin 'digitaltoad/vim-jade'
 Plugin 'wavded/vim-stylus'
 Plugin 'pangloss/vim-javascript'
 Plugin 'kchmck/vim-coffee-script'
-Plugin 'leafgarland/typescript-vim'
-"Plugin 'facebook/vim-flow'
+Plugin 'clausreinke/typescript-tools'
+Plugin 'raichoo/purescript-vim'
+Plugin 'mattn/emmet-vim'
+Plugin 'trotzig/import-js'
+Plugin 'facebook/vim-flow'
+"Plugin 'lambdatoast/elm.vim'
+Plugin 'ElmCast/elm-vim'
 
 " snippets
 Plugin 'SirVer/ultisnips'
@@ -61,10 +68,18 @@ Plugin 'altercation/vim-colors-solarized.git'
 Plugin 'bclear'
 Plugin 'summerfruit256.vim'
 Plugin 'nanotech/jellybeans.vim'
+Plugin 'pink'
+Plugin 'itchyny/landscape.vim'
+Plugin 'adlawson/vim-sorcerer'
+Plugin 'jpo/vim-railscasts-theme'
+Plugin 'jordwalke/flatlandia'
 
 " haskell
 Plugin 'dag/vim2hs'
 Plugin 'bitc/vim-hdevtools'
+
+" rust
+Plugin 'rust-lang/rust.vim'
 
 " vim-scripts repos don't need username
 Plugin 'nginx.vim'
@@ -82,10 +97,11 @@ set clipboard=unnamed
 
 set background=dark
 let g:solarized_termcolors=256
+set t_Co=256
 
 " make it not yell when first running BundleInstall and solarized doesn't
 " exist yet
-silent! colorscheme solarized
+silent! colorscheme railscasts
 
 " Gutter
 set number
@@ -179,16 +195,23 @@ nnoremap <leader>w :%s/\s\+$//e<CR>
 " highlighted anymore. From Gary Bernhardt of Destroy All Software
 nnoremap <CR> :nohlsearch<cr>
 
-" CoffeeScript compilation
-" Compile a highlighted section of code
-vmap <leader>c <esc>:'<,'>:CoffeeCompile<CR>
-" Compile the entire file if nothing is highlighted
-map <leader>c :CoffeeCompile<CR>
+" Large file management
+let g:large_file = 1024 * 1024 * 10 " 10 MB
+augroup large_file
+  autocmd!
+  function! ManageLargeFiles()
+    let f = expand("<afile>")
+    if getfsize(f) > g:large_file
+      setlocal bufhidden=unload " save memory when other file is viewed
+      setlocal noswapfile " no swapfiles of large files
+      setlocal undolevels=1 " only 1 undo level
+      setlocal syntax=off " turn off syntax highlighting by default
+    endif
+  endfunction
 
-" compile the whole coffeescript file and jump to a line
-" useful for debugging stack traces
-" Run with :C [line_number]
-command! -nargs=1 C CoffeeCompile | :<args>
+  au BufReadPre * :call ManageLargeFiles()
+augroup END
+
 
 " Plugin Setup
 " ********************
@@ -220,9 +243,7 @@ au FileType go au BufWritePre <buffer> Fmt
 
 au FileType haskell setlocal softtabstop=2 tabstop=2 shiftwidth=2 textwidth=0
 
-au FileType mkd,text setlocal spell formatoptions=ntaq1 textwidth=80 wrapmargin=0 foldcolumn=10 columns=100 " prose settings
-
-" prose editing settings
+"au FileType mkd,text setlocal spell formatoptions=taq1 textwidth=80 wrapmargin=0 foldcolumn=10 columns=100 " prose settings
 
 
 " These are all actually ruby files
@@ -230,11 +251,23 @@ au BufRead,BufNewFile {Gemfile,Rakefile,Vagrantfile,config.ru,*.gemspec} setloca
 
 au BufRead,BufNewFile *.java setlocal ft=java
 
+" Autoreload vimrc on changes woo!
+augroup reload_vimrc " {
+  autocmd!
+  autocmd BufWritePost $MYVIMRC source $MYVIMRC
+augroup END " }
+
+""" Syntastic stuff
+" disable vim-flow syntax checking, we want to use syntastic
+let g:flow#enable=0
+" use flow not flow check for syntax checking
+let g:syntastic_javascript_flow_exe = 'flow'
+
 """ syntastic stuff
 " use eslint for javascript
-"let g:syntastic_javascript_checkers = ["eslint"]
+let g:syntastic_javascript_checkers = ["eslint", "flow"]
 " check syntax on file open
-"let g:syntastic_check_on_open=1
+let g:syntastic_check_on_open=1
 " close on no errors, open on errors
 let g:syntastic_aggregate_errors = 1
 let g:syntastic_always_populate_loc_list = 1
