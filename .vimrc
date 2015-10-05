@@ -14,14 +14,12 @@ Plugin 'gmarik/Vundle.vim'
 
 Plugin 'MarcWeber/vim-addon-mw-utils'
 Plugin 'tomtom/tlib_vim'
-Plugin 'jergason/gocode-vimscripts'
 Plugin 'scrooloose/nerdtree'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'tpope/vim-surround'
 Plugin 'ervandew/supertab'
 Plugin 'mileszs/ack.vim'
 Plugin 'kien/ctrlp.vim'
-Plugin 'jnwhiteh/vim-golang'
 Plugin 'tpope/vim-fugitive'
 Plugin 'tpope/vim-obsession'
 Plugin 'scrooloose/syntastic'
@@ -30,27 +28,21 @@ Plugin 'plasticboy/vim-markdown'
 Plugin 'terryma/vim-multiple-cursors'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'aquach/vim-http-client'
+Plugin 'kchmck/vim-coffee-script'
 
 " javascript/web
 Plugin 'mxw/vim-jsx'
 Plugin 'Shutnik/jshint2.vim'
-Plugin 'nono/vim-handlebars'
-Plugin 'digitaltoad/vim-jade'
 Plugin 'wavded/vim-stylus'
 Plugin 'pangloss/vim-javascript'
-Plugin 'kchmck/vim-coffee-script'
-Plugin 'clausreinke/typescript-tools'
-Plugin 'raichoo/purescript-vim'
 Plugin 'mattn/emmet-vim'
 Plugin 'trotzig/import-js'
 Plugin 'facebook/vim-flow'
-"Plugin 'lambdatoast/elm.vim'
 Plugin 'ElmCast/elm-vim'
 
 " snippets
 Plugin 'SirVer/ultisnips'
-Plugin 'honza/vim-snippets'
-
+Plugin 'jergason/vim-snippets'
 
 " clojure
 Plugin 'tpope/vim-fireplace'
@@ -77,9 +69,6 @@ Plugin 'jordwalke/flatlandia'
 " haskell
 Plugin 'dag/vim2hs'
 Plugin 'bitc/vim-hdevtools'
-
-" rust
-Plugin 'rust-lang/rust.vim'
 
 " vim-scripts repos don't need username
 Plugin 'nginx.vim'
@@ -147,9 +136,7 @@ set backupdir=~/.vim/tmp
 " see :help statusline for more info on these options
 " always show status line
 set laststatus=2
-set statusline=file:%f " filename
-set statusline+=[%{strlen(&fenc)?&fenc:'none'}, " file encoding
-set statusline+=%{&ff}] " file format
+set statusline=%f " filename
 set statusline+=%m " modified flag
 set statusline+=%y " file type
 set statusline+=%{fugitive#statusline()} " current branch from fugitive
@@ -236,15 +223,7 @@ let g:ctrlp_custom_ignore = {
 
 au FileType python setlocal softtabstop=4 tabstop=4 shiftwidth=4 textwidth=0
 
-au FileType go setlocal softtabstop=4 tabstop=4 shiftwidth=4 textwidth=0 noexpandtab
-" Automatically call gofmt on golang files when saving as per
-" http://stackoverflow.com/questions/10969366/vim-automatically-formatting-golang-source-code-when-saving
-au FileType go au BufWritePre <buffer> Fmt
-
 au FileType haskell setlocal softtabstop=2 tabstop=2 shiftwidth=2 textwidth=0
-
-"au FileType mkd,text setlocal spell formatoptions=taq1 textwidth=80 wrapmargin=0 foldcolumn=10 columns=100 " prose settings
-
 
 " These are all actually ruby files
 au BufRead,BufNewFile {Gemfile,Rakefile,Vagrantfile,config.ru,*.gemspec} setlocal ft=ruby

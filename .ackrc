@@ -11,3 +11,4 @@
 --type-set=crontab=.crontab
 --ignore-dir=node_modules
 --ignore-dir=_site
+--ignore-dir=client/build
