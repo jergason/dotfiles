@@ -19,7 +19,7 @@ Plugin 'scrooloose/nerdcommenter'
 Plugin 'tpope/vim-surround'
 Plugin 'ervandew/supertab'
 Plugin 'mileszs/ack.vim'
-Plugin 'kien/ctrlp.vim'
+Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'tpope/vim-fugitive'
 Plugin 'tpope/vim-obsession'
 Plugin 'scrooloose/syntastic'
@@ -27,18 +27,20 @@ Plugin 'godlygeek/tabular'
 Plugin 'plasticboy/vim-markdown'
 Plugin 'terryma/vim-multiple-cursors'
 Plugin 'airblade/vim-gitgutter'
-Plugin 'aquach/vim-http-client'
-Plugin 'kchmck/vim-coffee-script'
+Plugin 'mikewest/vimroom'
+Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
 
 " javascript/web
 Plugin 'mxw/vim-jsx'
-Plugin 'Shutnik/jshint2.vim'
 Plugin 'wavded/vim-stylus'
 Plugin 'pangloss/vim-javascript'
 Plugin 'mattn/emmet-vim'
 Plugin 'trotzig/import-js'
 Plugin 'facebook/vim-flow'
 Plugin 'ElmCast/elm-vim'
+" use a local eslint if it exists in ./node_modules/.bin
+Plugin 'mtscout6/syntastic-local-eslint.vim'
 
 " snippets
 Plugin 'SirVer/ultisnips'
@@ -65,6 +67,7 @@ Plugin 'itchyny/landscape.vim'
 Plugin 'adlawson/vim-sorcerer'
 Plugin 'jpo/vim-railscasts-theme'
 Plugin 'jordwalke/flatlandia'
+Plugin 'zenorocha/dracula-theme', {'rtp': 'vim/'}
 
 " haskell
 Plugin 'dag/vim2hs'
@@ -84,13 +87,9 @@ set showcmd                     " display incomplete commands
 set clipboard=unnamed
 " Color stuff
 
-set background=dark
-let g:solarized_termcolors=256
-set t_Co=256
-
-" make it not yell when first running BundleInstall and solarized doesn't
+" make it not yell when first running BundleInstall and the colorsheme doesn't
 " exist yet
-silent! colorscheme railscasts
+silent! colorscheme molokai
 
 " Gutter
 set number
@@ -140,11 +139,17 @@ set statusline=%f " filename
 set statusline+=%m " modified flag
 set statusline+=%y " file type
 set statusline+=%{fugitive#statusline()} " current branch from fugitive
+" syntastic statusline stuff
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
 set statusline+=%= " separator between right and left items
 set statusline+=%{StatusLineFileSize()} " number of bytes or K in file
 set statusline+=col:%c\ 
 set statusline+=%l/%L " current line / total lines
 set statusline+=\ %P " percentage through file
+
 
 function! StatusLineFileSize()
  let size = getfsize(expand('%%:p'))
@@ -155,6 +160,29 @@ function! StatusLineFileSize()
    return size . 'k '
  endif
 endfunction
+
+"" Airline config
+let g:airline_section_z='%{StatusLineFileSize()} col:%c %l/%L %P'
+
+if !exists('g:airline_symbols')
+  let g:airline_symbols = {}
+endif
+
+" unicode symbols
+let g:airline_left_sep = ''
+let g:airline_left_alt_sep = ''
+let g:airline_right_sep = ''
+let g:airline_right_alt_sep = ''
+let g:airline_symbols.crypt = '🔒'
+let g:airline_symbols.linenr = '␊'
+let g:airline_symbols.linenr = '␤'
+let g:airline_symbols.linenr = '¶'
+let g:airline_symbols.branch = ''
+let g:airline_symbols.paste = 'ρ'
+let g:airline_symbols.spell = 'Ꞩ'
+let g:airline_symbols.notexists = '∄'
+let g:airline_symbols.whitespace = 'Ξ'
+
 
 " Mappings
 let mapleader="," " use , for leader instead of backslash
@@ -182,8 +210,13 @@ nnoremap <leader>w :%s/\s\+$//e<CR>
 " highlighted anymore. From Gary Bernhardt of Destroy All Software
 nnoremap <CR> :nohlsearch<cr>
 
+" format selected text in visual mode as json
+" from http://blog.realnitro.be/2010/12/20/format-json-in-vim-using-pythons-jsontool-module/
+" i have no idea why this works
+map <Leader>j :%!python -m json.tool<CR>
+
 " Large file management
-let g:large_file = 1024 * 1024 * 10 " 10 MB
+let g:large_file = 1024 * 1024 * 5 " 5 MB
 augroup large_file
   autocmd!
   function! ManageLargeFiles()
@@ -217,18 +250,37 @@ let g:NERDCustomDelimiters = {
 " Setup ctrlp.vim
 " Ignore version control and binary files
 let g:ctrlp_custom_ignore = {
- \ 'dir': '\.git$\|\.hg$\|\.svn$\|node_modules$',
+ \ 'dir': '\.git$\|\.hg$\|\.svn$\|node_modules$\|coverage$\|elm-stuff$',
  \ 'file': '\.o$\|\.exe$\|\.bin$'
  \ }
 
-au FileType python setlocal softtabstop=4 tabstop=4 shiftwidth=4 textwidth=0
+augroup file_type_settings " {
+  au FileType python setlocal softtabstop=4 tabstop=4 shiftwidth=4 textwidth=0
 
-au FileType haskell setlocal softtabstop=2 tabstop=2 shiftwidth=2 textwidth=0
+  au FileType haskell setlocal softtabstop=2 tabstop=2 shiftwidth=2 textwidth=0
 
-" These are all actually ruby files
-au BufRead,BufNewFile {Gemfile,Rakefile,Vagrantfile,config.ru,*.gemspec} setlocal ft=ruby
+  au FileType javascript setlocal suffixesadd+=.js,.jsx
 
-au BufRead,BufNewFile *.java setlocal ft=java
+  au FileType elm map <Leader>m :ElmMake<CR>
+  au FileType elm map <Leader>b :ElmMakeMain<CR>
+  au FileType elm map <Leader>r :ElmRepl<CR>
+  "au FileType elm map <Leader>t :ElmTest<CR>
+  au FileType elm map <Leader>e :ElmErrorDetail<CR>
+  au FileType elm map <Leader>d :ElmShowDocs<CR>
+  au FileType elm map <Leader>f :ElmFormat<CR>
+
+  au BufRead,BufNewFile *.icss setlocal ft=css
+  au BufRead,BufNewFile *.istyl setlocal ft=stylus
+
+  au BufRead,BufNewFile {.eslintrc,.eslintignore} setlocal ft=json
+
+  " These are all actually ruby files
+  au BufRead,BufNewFile {Gemfile,Rakefile,Vagrantfile,config.ru,*.gemspec} setlocal ft=ruby
+
+  au BufRead,BufNewFile {*.ex,*.exs} setlocal ft=ruby
+
+  au BufRead,BufNewFile *.java setlocal ft=java
+augroup END " }
 
 " Autoreload vimrc on changes woo!
 augroup reload_vimrc " {
@@ -236,15 +288,25 @@ augroup reload_vimrc " {
   autocmd BufWritePost $MYVIMRC source $MYVIMRC
 augroup END " }
 
+""" Elm stuff
+let g:elm_jump_to_error = 0
+let g:elm_setup_keybindings = 0
+
 """ Syntastic stuff
 " disable vim-flow syntax checking, we want to use syntastic
 let g:flow#enable=0
 " use flow not flow check for syntax checking
-let g:syntastic_javascript_flow_exe = 'flow'
+" let g:syntastic_javascript_flow_exe = 'flow'
 
 """ syntastic stuff
 " use eslint for javascript
-let g:syntastic_javascript_checkers = ["eslint", "flow"]
+let g:syntastic_javascript_checkers = ["eslint"]
+" use eslint_d for SPEEEEEEED
+" let g:syntastic_javascript_eslint_exec = 'eslint_d'
+
+" elm woo
+let g:syntastic_elm_checkers = ["elm_make"]
+
 " check syntax on file open
 let g:syntastic_check_on_open=1
 " close on no errors, open on errors
@@ -253,10 +315,21 @@ let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list=2
 let g:syntastic_haskell_checkers = ['hdevtools']
 
+
+" omnicomplete/supertab interaction
+set omnifunc=syntaxcomplete#Complete
+" make supertab use omnicomplete
+"let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
+" make supertab examine the context to decide whether to use omnicomplete
+let g:SuperTabDefaultCompletionType = "context"
+
 """ turn on rainbow parens always!
-au VimEnter * RainbowParenthesesToggle
-au Syntax * RainbowParenthesesLoadRound
-au Syntax * RainbowParenthesesLoadSquare
-au Syntax * RainbowParenthesesLoadBraces
+augroup rainbow_parens " {
+  au VimEnter * RainbowParenthesesToggle
+  au Syntax * RainbowParenthesesLoadRound
+  au Syntax * RainbowParenthesesLoadSquare
+  au Syntax * RainbowParenthesesLoadBraces
+augroup END " }
+
 let g:rbpt_max = 16
 let g:rbpt_loadcmd_toggle = 0
