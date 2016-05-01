@@ -12,8 +12,6 @@ call vundle#begin()
 " manage Vundle w/ Vundle. Required
 Plugin 'gmarik/Vundle.vim'
 
-Plugin 'MarcWeber/vim-addon-mw-utils'
-Plugin 'tomtom/tlib_vim'
 Plugin 'scrooloose/nerdtree'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'tpope/vim-surround'
@@ -27,17 +25,19 @@ Plugin 'godlygeek/tabular'
 Plugin 'plasticboy/vim-markdown'
 Plugin 'terryma/vim-multiple-cursors'
 Plugin 'airblade/vim-gitgutter'
-Plugin 'mikewest/vimroom'
-Plugin 'vim-airline/vim-airline'
-Plugin 'vim-airline/vim-airline-themes'
+"Plugin 'vim-airline/vim-airline' " seems to be causing some perf problems
+"Plugin 'vim-airline/vim-airline-themes'
+Plugin 'easymotion/vim-easymotion'
+Plugin 'tmhedberg/matchit'
 
 " javascript/web
 Plugin 'mxw/vim-jsx'
 Plugin 'wavded/vim-stylus'
+Plugin 'cakebaker/scss-syntax.vim'
+Plugin 'hail2u/vim-css3-syntax'
 Plugin 'pangloss/vim-javascript'
 Plugin 'mattn/emmet-vim'
-Plugin 'trotzig/import-js'
-Plugin 'facebook/vim-flow'
+Plugin 'trotzig/import-js' " TODO: learn to use this better
 Plugin 'ElmCast/elm-vim'
 " use a local eslint if it exists in ./node_modules/.bin
 Plugin 'mtscout6/syntastic-local-eslint.vim'
@@ -47,35 +47,27 @@ Plugin 'SirVer/ultisnips'
 Plugin 'jergason/vim-snippets'
 
 " clojure
-Plugin 'tpope/vim-fireplace'
-Plugin 'tpope/vim-leiningen'
-Plugin 'tpope/vim-classpath'
-Plugin 'guns/vim-clojure-static'
-Plugin 'kien/rainbow_parentheses.vim'
+Plugin 'luochen1990/rainbow'
 
 " themes
 Plugin 'tomasr/molokai'
-Plugin 'chriskempson/base16-vim'
-Plugin 'chriskempson/tomorrow-theme', {'rtp': 'vim/'}
-Plugin 'noahfrederick/Hemisu'
 Plugin 'altercation/vim-colors-solarized.git'
-Plugin 'bclear'
 Plugin 'summerfruit256.vim'
 Plugin 'nanotech/jellybeans.vim'
-Plugin 'pink'
 Plugin 'itchyny/landscape.vim'
 Plugin 'adlawson/vim-sorcerer'
 Plugin 'jpo/vim-railscasts-theme'
 Plugin 'jordwalke/flatlandia'
 Plugin 'zenorocha/dracula-theme', {'rtp': 'vim/'}
+Plugin 'vim-scripts/light2011'
 
 " haskell
 Plugin 'dag/vim2hs'
 Plugin 'bitc/vim-hdevtools'
 
 " vim-scripts repos don't need username
-Plugin 'nginx.vim'
-Plugin 'SyntaxRange'
+Plugin 'SyntaxRange' " dependency for vimdeck
+
 
 
 call vundle#end()
@@ -85,7 +77,6 @@ set showcmd                     " display incomplete commands
 
 " make copy paste work with tmux
 set clipboard=unnamed
-" Color stuff
 
 " make it not yell when first running BundleInstall and the colorsheme doesn't
 " exist yet
@@ -93,13 +84,20 @@ silent! colorscheme molokai
 
 " Gutter
 set number
-set cursorline
+
+set nocursorline "cursorline is slow
+set norelativenumber "relativenumber is also slow :(
+
+augroup perf_settings " {
+  au VimEnter * NoMatchParen
+augroup END " }
+
 
 " Show a vertical line at 80 characters
 if exists('+colorcolumn')
- set cc=80
+  set cc=80
 else
- au BufWinEnter * let w:m2=matchadd('ErrorMsg', '\%>80v.\+', -1)
+  au BufWinEnter * let w:m2=matchadd('ErrorMsg', '\%>80v.\+', -1)
 endif
 
 " Allow background buffers without writing to them,
@@ -133,12 +131,27 @@ set backupdir=~/.vim/tmp
 
 " statusline
 " see :help statusline for more info on these options
+
+" statusline colors
+hi User1 guifg=#ffdad8  guibg=#880c0e
+hi User2 guifg=#000000  guibg=#F4905C
+hi User3 guifg=#292b00  guibg=#f4f597
+hi User4 guifg=#112605  guibg=#aefe7B
+hi User5 guifg=#051d00  guibg=#7dcc7d
+hi User7 guifg=#ffffff  guibg=#880c0e gui=bold
+hi User8 guifg=#ffffff  guibg=#5b7fbb
+hi User9 guifg=#ffffff  guibg=#810085
+hi User0 guifg=#ffffff  guibg=#094afe
+
 " always show status line
 set laststatus=2
+set statusline=
 set statusline=%f " filename
+"set statusline+=%1*\ %<%F\                                "File+path
 set statusline+=%m " modified flag
 set statusline+=%y " file type
-set statusline+=%{fugitive#statusline()} " current branch from fugitive
+" set statusline+=%{fugitive#statusline()} " current branch from fugitive
+" (this is slow)
 " syntastic statusline stuff
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
@@ -152,36 +165,36 @@ set statusline+=\ %P " percentage through file
 
 
 function! StatusLineFileSize()
- let size = getfsize(expand('%%:p'))
- if (size < 1024)
-   return size . 'b '
- else
-   let size = size / 1024
-   return size . 'k '
- endif
+  let size = getfsize(expand('%%:p'))
+  if (size < 1024)
+    return size . 'b '
+  else
+    let size = size / 1024
+    return size . 'k '
+  endif
 endfunction
 
-"" Airline config
-let g:airline_section_z='%{StatusLineFileSize()} col:%c %l/%L %P'
+" Airline config
+"let g:airline_section_z='%{StatusLineFileSize()}'
 
-if !exists('g:airline_symbols')
-  let g:airline_symbols = {}
-endif
+"if !exists('g:airline_symbols')
+  "let g:airline_symbols = {}
+"endif
 
-" unicode symbols
-let g:airline_left_sep = ''
-let g:airline_left_alt_sep = ''
-let g:airline_right_sep = ''
-let g:airline_right_alt_sep = ''
-let g:airline_symbols.crypt = '🔒'
-let g:airline_symbols.linenr = '␊'
-let g:airline_symbols.linenr = '␤'
-let g:airline_symbols.linenr = '¶'
-let g:airline_symbols.branch = ''
-let g:airline_symbols.paste = 'ρ'
-let g:airline_symbols.spell = 'Ꞩ'
-let g:airline_symbols.notexists = '∄'
-let g:airline_symbols.whitespace = 'Ξ'
+"" unicode symbols
+"let g:airline_left_sep = ''
+"let g:airline_left_alt_sep = ''
+"let g:airline_right_sep = ''
+"let g:airline_right_alt_sep = ''
+"let g:airline_symbols.crypt = '🔒'
+"let g:airline_symbols.linenr = '␊'
+"let g:airline_symbols.linenr = '␤'
+"let g:airline_symbols.linenr = '¶'
+"let g:airline_symbols.branch = ''
+"let g:airline_symbols.paste = 'ρ'
+"let g:airline_symbols.spell = 'Ꞩ'
+"let g:airline_symbols.notexists = '∄'
+"let g:airline_symbols.whitespace = 'Ξ'
 
 
 " Mappings
@@ -189,7 +202,7 @@ let mapleader="," " use , for leader instead of backslash
 " use jj for esc
 inoremap jj <esc>
 " use leader leader to jump to the previously edited file
-nnoremap <leader><leader> <C-^>
+nnoremap <leader>a <C-^>
 
 " jump back and forth between previous panes
 nnoremap <leader>p <C-W><C-P>
@@ -288,21 +301,19 @@ augroup reload_vimrc " {
   autocmd BufWritePost $MYVIMRC source $MYVIMRC
 augroup END " }
 
-""" Elm stuff
+" Elm stuff
 let g:elm_jump_to_error = 0
 let g:elm_setup_keybindings = 0
 
-""" Syntastic stuff
+" Syntastic stuff
 " disable vim-flow syntax checking, we want to use syntastic
 let g:flow#enable=0
 " use flow not flow check for syntax checking
 " let g:syntastic_javascript_flow_exe = 'flow'
 
-""" syntastic stuff
+" syntastic stuff
 " use eslint for javascript
 let g:syntastic_javascript_checkers = ["eslint"]
-" use eslint_d for SPEEEEEEED
-" let g:syntastic_javascript_eslint_exec = 'eslint_d'
 
 " elm woo
 let g:syntastic_elm_checkers = ["elm_make"]
@@ -317,19 +328,13 @@ let g:syntastic_haskell_checkers = ['hdevtools']
 
 
 " omnicomplete/supertab interaction
+" TODO: figure this out better
 set omnifunc=syntaxcomplete#Complete
 " make supertab use omnicomplete
 "let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
 " make supertab examine the context to decide whether to use omnicomplete
 let g:SuperTabDefaultCompletionType = "context"
 
-""" turn on rainbow parens always!
-augroup rainbow_parens " {
-  au VimEnter * RainbowParenthesesToggle
-  au Syntax * RainbowParenthesesLoadRound
-  au Syntax * RainbowParenthesesLoadSquare
-  au Syntax * RainbowParenthesesLoadBraces
-augroup END " }
 
-let g:rbpt_max = 16
-let g:rbpt_loadcmd_toggle = 0
+" rainbow parens
+let g:rainbow_active = 0

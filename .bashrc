@@ -21,11 +21,7 @@ export PATH=/usr/local/bin:/usr/local/sbin:$PATH
 # add homebrew python path
 export PATH=/usr/local/share/python:$PATH
 
-if [[ "$platform" == 'freebsd' ]]; then
-  export EDITOR=mvim
-else
-  export EDITOR=vim
-fi
+export EDITOR=vim
 export GNUTERM='x11'
 
 # Use local ackrc files if they exist
@@ -45,6 +41,7 @@ alias diary='cd ~/code/journal/kualico-work && vim `date +"%Y-%m-%d"`.md'
 alias tcp='tmux show-buffer | pbcopy'
 # highlight source code
 alias hl='highlight -O rtf --font "Source Code Pro" --font-size=30'
+alias gitclean='git branch --merged | grep -v "\*" | grep -v master | grep -v dev | xargs -n 1 git branch -d'
 
 # tmux alias to make sure it supports 256 colors
 alias tmux="TERM=screen-256color tmux"
@@ -90,3 +87,7 @@ export LUA_CPATH='/Users/jergason/.luarocks/lib/lua/5.1/?.so;/Users/jergason/tor
 export PATH=/Users/jergason/torch/install/bin:$PATH  # Added automatically by torch-dist
 export LD_LIBRARY_PATH=/Users/jergason/torch/install/lib:$LD_LIBRARY_PATH  # Added automatically by torch-dist
 export DYLD_LIBRARY_PATH=/Users/jergason/torch/install/lib:$DYLD_LIBRARY_PATH  # Added automatically by torch-dist
+
+# behold my very own quote server
+curl --silent localhost:4041 | fmt -t 80 | ponysay -W 80
+# fortune | ponysay
