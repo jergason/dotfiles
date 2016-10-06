@@ -25,13 +25,14 @@ Plugin 'godlygeek/tabular'
 Plugin 'plasticboy/vim-markdown'
 Plugin 'terryma/vim-multiple-cursors'
 Plugin 'airblade/vim-gitgutter'
-"Plugin 'vim-airline/vim-airline' " seems to be causing some perf problems
-"Plugin 'vim-airline/vim-airline-themes'
 Plugin 'easymotion/vim-easymotion'
 Plugin 'tmhedberg/matchit'
+" search dash from vim with :Dash
+Plugin 'rizzatti/dash.vim'
 
 " javascript/web
 Plugin 'mxw/vim-jsx'
+Plugin 'digitaltoad/vim-pug'
 Plugin 'wavded/vim-stylus'
 Plugin 'cakebaker/scss-syntax.vim'
 Plugin 'hail2u/vim-css3-syntax'
@@ -41,6 +42,7 @@ Plugin 'trotzig/import-js' " TODO: learn to use this better
 Plugin 'ElmCast/elm-vim'
 " use a local eslint if it exists in ./node_modules/.bin
 Plugin 'mtscout6/syntastic-local-eslint.vim'
+Plugin 'maksimr/vim-jsbeautify'
 
 " snippets
 Plugin 'SirVer/ultisnips'
@@ -65,6 +67,9 @@ Plugin 'vim-scripts/light2011'
 Plugin 'dag/vim2hs'
 Plugin 'bitc/vim-hdevtools'
 
+" elixir
+Plugin 'elixir-lang/vim-elixir'
+
 " vim-scripts repos don't need username
 Plugin 'SyntaxRange' " dependency for vimdeck
 
@@ -74,6 +79,10 @@ call vundle#end()
 
 filetype plugin indent on       " load file type plugins + indentation
 set showcmd                     " display incomplete commands
+
+" soft wrap all lines (why doesn't this work?)
+set wrap
+set lbr
 
 " make copy paste work with tmux
 set clipboard=unnamed
@@ -89,7 +98,7 @@ set nocursorline "cursorline is slow
 set norelativenumber "relativenumber is also slow :(
 
 augroup perf_settings " {
-  au VimEnter * NoMatchParen
+  "au VimEnter * NoMatchParen
 augroup END " }
 
 
@@ -132,16 +141,6 @@ set backupdir=~/.vim/tmp
 " statusline
 " see :help statusline for more info on these options
 
-" statusline colors
-hi User1 guifg=#ffdad8  guibg=#880c0e
-hi User2 guifg=#000000  guibg=#F4905C
-hi User3 guifg=#292b00  guibg=#f4f597
-hi User4 guifg=#112605  guibg=#aefe7B
-hi User5 guifg=#051d00  guibg=#7dcc7d
-hi User7 guifg=#ffffff  guibg=#880c0e gui=bold
-hi User8 guifg=#ffffff  guibg=#5b7fbb
-hi User9 guifg=#ffffff  guibg=#810085
-hi User0 guifg=#ffffff  guibg=#094afe
 
 " always show status line
 set laststatus=2
@@ -173,28 +172,6 @@ function! StatusLineFileSize()
     return size . 'k '
   endif
 endfunction
-
-" Airline config
-"let g:airline_section_z='%{StatusLineFileSize()}'
-
-"if !exists('g:airline_symbols')
-  "let g:airline_symbols = {}
-"endif
-
-"" unicode symbols
-"let g:airline_left_sep = ''
-"let g:airline_left_alt_sep = ''
-"let g:airline_right_sep = ''
-"let g:airline_right_alt_sep = ''
-"let g:airline_symbols.crypt = '🔒'
-"let g:airline_symbols.linenr = '␊'
-"let g:airline_symbols.linenr = '␤'
-"let g:airline_symbols.linenr = '¶'
-"let g:airline_symbols.branch = ''
-"let g:airline_symbols.paste = 'ρ'
-"let g:airline_symbols.spell = 'Ꞩ'
-"let g:airline_symbols.notexists = '∄'
-"let g:airline_symbols.whitespace = 'Ξ'
 
 
 " Mappings
@@ -228,6 +205,32 @@ nnoremap <CR> :nohlsearch<cr>
 " i have no idea why this works
 map <Leader>j :%!python -m json.tool<CR>
 
+" show or hide bottom status bar. useful for egghead recordings
+" see http://unix.stackexchange.com/questions/140898/vim-hide-status-line-in-the-bottom
+let s:hidden_all = 0
+function! ToggleHiddenAll()
+    if s:hidden_all  == 0
+        let s:hidden_all = 1
+        set noshowmode
+        set noruler
+        set laststatus=0
+        set noshowcmd
+    else
+        let s:hidden_all = 0
+        set showmode
+        set ruler
+        set laststatus=2
+        set showcmd
+    endif
+endfunction
+
+function! EggheadMode()
+  :call ToggleHiddenAll()
+  :set nu!
+endfunction
+
+nnoremap <S-h> :GitGutterToggle<CR> :call EggheadMode()<CR>
+
 " Large file management
 let g:large_file = 1024 * 1024 * 5 " 5 MB
 augroup large_file
@@ -248,6 +251,9 @@ augroup END
 
 " Plugin Setup
 " ********************
+
+" vim-jsx should apply to .js files too
+let g:jsx_ext_required = 0
 
 " nerdtree
 " don't ask to delete buffer after file deleted
@@ -282,6 +288,8 @@ augroup file_type_settings " {
   au FileType elm map <Leader>d :ElmShowDocs<CR>
   au FileType elm map <Leader>f :ElmFormat<CR>
 
+  au FileType markdown setlocal wrap lbr spell
+
   au BufRead,BufNewFile *.icss setlocal ft=css
   au BufRead,BufNewFile *.istyl setlocal ft=stylus
 
@@ -289,8 +297,6 @@ augroup file_type_settings " {
 
   " These are all actually ruby files
   au BufRead,BufNewFile {Gemfile,Rakefile,Vagrantfile,config.ru,*.gemspec} setlocal ft=ruby
-
-  au BufRead,BufNewFile {*.ex,*.exs} setlocal ft=ruby
 
   au BufRead,BufNewFile *.java setlocal ft=java
 augroup END " }
