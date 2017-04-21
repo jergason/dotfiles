@@ -7,15 +7,7 @@ elif [[ "$unamestr" == "Darwin" ]]; then
   platform='freebsd'
 fi
 
-# golang env vars setup
-export GOPATH=~/golang
-export GOROOT=$GOPATH/go
-export GOBIN=$GOPATH/bin
-
-# add GOBIN to path
-export PATH=$GOBIN:$PATH
-export PATH=$GOROOT/bin:$PATH
-
+# Add homebrew binaries to path
 export PATH=/usr/local/bin:/usr/local/sbin:$PATH
 
 # add homebrew python path
@@ -24,8 +16,26 @@ export PATH=/usr/local/share/python:$PATH
 export EDITOR=vim
 export GNUTERM='x11'
 
+# history setup
+
+# append to history immediately after each command is executed
+# this apparently fixes issues with tmux wiping out history files
+shopt -s histappend
+# replaces ~/.bash_history with ~/.history/year/month/
+export HISTFILE="${HOME}/.history/$(date -u +%Y/%m/%d)_${HOSTNAME_SHORT}_$$"
+# unlimited history file size
+export HISTSIZE="NOTHING"
+export HISTFILESIZE="NOTHING"
+# write new lines to history file after running each command instead of when shell exists
+export PROMPT_COMMAND="history -a;$PROMPT_COMMAND"
+
+
+
 # Use local ackrc files if they exist
 export ACKRC=".ackrc"
+
+# Ansible Vault password file location
+export ANSIBLE_VAULT_PASSWORD_FILE=~/code/mdisc/.ansible-vault-pass.txt
 
 # set file limit
 ulimit -n 65536
@@ -38,14 +48,12 @@ alias ls="ls -G" # colors in ls
 alias pp='python -mjson.tool' #json pretty printing
 alias nis='npm i --save' # install and save npm modules woo
 alias diary='cd ~/code/journal/kualico-work && vim `date +"%Y-%m-%d"`.md'
+alias journal='cd ~/code/journal/fivestack && vim `date +"%Y-%m-%d"`.md'
 alias tcp='tmux show-buffer | pbcopy'
 # highlight source code
 alias hl='highlight -O rtf --font "Source Code Pro" --font-size=30'
-alias gitclean='git branch --merged | grep -v "\*" | grep -v master | grep -v dev | xargs -n 1 git branch -d'
-
-# tmux alias to make sure it supports 256 colors
-alias tmux="TERM=screen-256color tmux"
-
+alias gitclean='git branch --merged | grep -v "\*" | grep -v master | grep -v dev | grep -v yours-master | xargs -n 1 git branch -d'
+alias search_history="history | awk '{print $2}' | sort | uniq -c | sort -rn | head -10"
 
 # bash completion
 if [[ "$platform" == 'freebsd' ]]; then

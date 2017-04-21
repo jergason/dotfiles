@@ -15,34 +15,33 @@ Plugin 'gmarik/Vundle.vim'
 Plugin 'scrooloose/nerdtree'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'tpope/vim-surround'
-Plugin 'ervandew/supertab'
 Plugin 'mileszs/ack.vim'
 Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'tpope/vim-fugitive'
-Plugin 'tpope/vim-obsession'
 Plugin 'scrooloose/syntastic'
-Plugin 'godlygeek/tabular'
 Plugin 'plasticboy/vim-markdown'
 Plugin 'terryma/vim-multiple-cursors'
 Plugin 'airblade/vim-gitgutter'
-Plugin 'easymotion/vim-easymotion'
+Plugin 'easymotion/vim-easymotion' " TODO: figure this out more
 Plugin 'tmhedberg/matchit'
-" search dash from vim with :Dash
-Plugin 'rizzatti/dash.vim'
+Plugin 'sbdchd/neoformat'
+
+Plugin 'janko-m/vim-test'
 
 " javascript/web
+Plugin 'pangloss/vim-javascript'
 Plugin 'mxw/vim-jsx'
 Plugin 'digitaltoad/vim-pug'
 Plugin 'wavded/vim-stylus'
 Plugin 'cakebaker/scss-syntax.vim'
 Plugin 'hail2u/vim-css3-syntax'
-Plugin 'pangloss/vim-javascript'
 Plugin 'mattn/emmet-vim'
-Plugin 'trotzig/import-js' " TODO: learn to use this better
 Plugin 'ElmCast/elm-vim'
 " use a local eslint if it exists in ./node_modules/.bin
 Plugin 'mtscout6/syntastic-local-eslint.vim'
-Plugin 'maksimr/vim-jsbeautify'
+
+" Meteor (;_;)
+Plugin 'Slava/vim-spacebars'
 
 " snippets
 Plugin 'SirVer/ultisnips'
@@ -51,28 +50,20 @@ Plugin 'jergason/vim-snippets'
 " clojure
 Plugin 'luochen1990/rainbow'
 
+" elixir
+Plugin 'elixir-lang/vim-elixir'
+Plugin 'slashmili/alchemist.vim'
+
 " themes
 Plugin 'tomasr/molokai'
 Plugin 'altercation/vim-colors-solarized.git'
 Plugin 'summerfruit256.vim'
-Plugin 'nanotech/jellybeans.vim'
 Plugin 'itchyny/landscape.vim'
-Plugin 'adlawson/vim-sorcerer'
-Plugin 'jpo/vim-railscasts-theme'
-Plugin 'jordwalke/flatlandia'
+Plugin 'jergason/toothpaste'
+Plugin 'nanotech/jellybeans.vim'
 Plugin 'zenorocha/dracula-theme', {'rtp': 'vim/'}
-Plugin 'vim-scripts/light2011'
-
-" haskell
-Plugin 'dag/vim2hs'
-Plugin 'bitc/vim-hdevtools'
-
-" elixir
-Plugin 'elixir-lang/vim-elixir'
-
-" vim-scripts repos don't need username
-Plugin 'SyntaxRange' " dependency for vimdeck
-
+Plugin 'jordwalke/flatlandia'
+Plugin 'trevordmiller/nova-vim'
 
 
 call vundle#end()
@@ -80,16 +71,22 @@ call vundle#end()
 filetype plugin indent on       " load file type plugins + indentation
 set showcmd                     " display incomplete commands
 
+" use terminal gui colors (makes some themes work)
+set termguicolors
+
 " soft wrap all lines (why doesn't this work?)
 set wrap
 set lbr
+
+" don't change directory when opening files
+set noautochdir
 
 " make copy paste work with tmux
 set clipboard=unnamed
 
 " make it not yell when first running BundleInstall and the colorsheme doesn't
 " exist yet
-silent! colorscheme molokai
+silent! colorscheme landscape
 
 " Gutter
 set number
@@ -114,7 +111,6 @@ endif
 set hidden
 
 " Whitespace
-set nowrap                      " don't wrap lines
 set tabstop=2                   " a tab is two spaces
 set shiftwidth=2
 set softtabstop=2
@@ -189,6 +185,9 @@ nnoremap J Jdw
 
 " toggle paste mode off and on
 nnoremap <leader>o :set paste!<CR>
+
+" search for word under the cursor
+nnoremap <leader>s :Ack <C-R><C-W><CR>
 
 " Easier opening and closing of nerdtree
 nnoremap <leader>t :NERDTreeToggle<CR>
@@ -298,6 +297,8 @@ augroup file_type_settings " {
   " These are all actually ruby files
   au BufRead,BufNewFile {Gemfile,Rakefile,Vagrantfile,config.ru,*.gemspec} setlocal ft=ruby
 
+  au BufRead,BufNewFile {*.html} setlocal ft=spacebars,html
+
   au BufRead,BufNewFile *.java setlocal ft=java
 augroup END " }
 
@@ -307,15 +308,14 @@ augroup reload_vimrc " {
   autocmd BufWritePost $MYVIMRC source $MYVIMRC
 augroup END " }
 
+augroup prettier " {
+  " run prettier on file save
+  "autocmd BufWritePre *.js Neoformat
+augroup END " }
+
 " Elm stuff
 let g:elm_jump_to_error = 0
 let g:elm_setup_keybindings = 0
-
-" Syntastic stuff
-" disable vim-flow syntax checking, we want to use syntastic
-let g:flow#enable=0
-" use flow not flow check for syntax checking
-" let g:syntastic_javascript_flow_exe = 'flow'
 
 " syntastic stuff
 " use eslint for javascript
@@ -324,23 +324,20 @@ let g:syntastic_javascript_checkers = ["eslint"]
 " elm woo
 let g:syntastic_elm_checkers = ["elm_make"]
 
+let g:syntastic_enable_elixir_checker = 1
+" TODO: why doesn't this work?
+let g:syntastic_elixir_checkers = ["elixir"]
+
 " check syntax on file open
-let g:syntastic_check_on_open=1
+let g:syntastic_check_on_open = 1
 " close on no errors, open on errors
 let g:syntastic_aggregate_errors = 1
 let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list=2
+let g:syntastic_auto_loc_list = 2
 let g:syntastic_haskell_checkers = ['hdevtools']
-
-
-" omnicomplete/supertab interaction
-" TODO: figure this out better
-set omnifunc=syntaxcomplete#Complete
-" make supertab use omnicomplete
-"let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
-" make supertab examine the context to decide whether to use omnicomplete
-let g:SuperTabDefaultCompletionType = "context"
-
 
 " rainbow parens
 let g:rainbow_active = 0
+
+" try to load a .vimlocal file with custom project-specific settings
+silent! so .vimlocal
