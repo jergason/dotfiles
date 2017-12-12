@@ -18,15 +18,19 @@ Plugin 'tpope/vim-surround'
 Plugin 'mileszs/ack.vim'
 Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'tpope/vim-fugitive'
-Plugin 'scrooloose/syntastic'
+Plugin 'tpope/vim-rhubarb'
 Plugin 'plasticboy/vim-markdown'
 Plugin 'terryma/vim-multiple-cursors'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'easymotion/vim-easymotion' " TODO: figure this out more
 Plugin 'tmhedberg/matchit'
-Plugin 'sbdchd/neoformat'
+Plugin 'mitermayer/vim-prettier'
+Plugin 'w0rp/ale'
+Plugin 'valloric/youcompleteme'
 
 Plugin 'janko-m/vim-test'
+" for writing
+Plugin 'junegunn/goyo.vim'
 
 " javascript/web
 Plugin 'pangloss/vim-javascript'
@@ -37,11 +41,9 @@ Plugin 'cakebaker/scss-syntax.vim'
 Plugin 'hail2u/vim-css3-syntax'
 Plugin 'mattn/emmet-vim'
 Plugin 'ElmCast/elm-vim'
-" use a local eslint if it exists in ./node_modules/.bin
-Plugin 'mtscout6/syntastic-local-eslint.vim'
+Plugin 'posva/vim-vue'
 
-" Meteor (;_;)
-Plugin 'Slava/vim-spacebars'
+Plugin 'fatih/vim-go'
 
 " snippets
 Plugin 'SirVer/ultisnips'
@@ -53,6 +55,7 @@ Plugin 'luochen1990/rainbow'
 " elixir
 Plugin 'elixir-lang/vim-elixir'
 Plugin 'slashmili/alchemist.vim'
+
 
 " themes
 Plugin 'tomasr/molokai'
@@ -83,6 +86,10 @@ set noautochdir
 
 " make copy paste work with tmux
 set clipboard=unnamed
+
+" enable modeline support
+set modelines=1
+set modeline
 
 " make it not yell when first running BundleInstall and the colorsheme doesn't
 " exist yet
@@ -145,16 +152,14 @@ set statusline=%f " filename
 "set statusline+=%1*\ %<%F\                                "File+path
 set statusline+=%m " modified flag
 set statusline+=%y " file type
-" set statusline+=%{fugitive#statusline()} " current branch from fugitive
-" (this is slow)
-" syntastic statusline stuff
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
+
+" ale statusline stuff
+set statusline+=%{ALEGetStatusLine()}
 set statusline+=%*
 
 set statusline+=%= " separator between right and left items
 set statusline+=%{StatusLineFileSize()} " number of bytes or K in file
-set statusline+=col:%c\ 
+set statusline+=col:%c\
 set statusline+=%l/%L " current line / total lines
 set statusline+=\ %P " percentage through file
 
@@ -204,6 +209,12 @@ nnoremap <CR> :nohlsearch<cr>
 " i have no idea why this works
 map <Leader>j :%!python -m json.tool<CR>
 
+" vim-test mappings
+" test the current file
+map <Leader>e :TestFile<CR>
+" test the last file that was tested
+map <Leader>l :TestLast<CR>
+
 " show or hide bottom status bar. useful for egghead recordings
 " see http://unix.stackexchange.com/questions/140898/vim-hide-status-line-in-the-bottom
 let s:hidden_all = 0
@@ -229,6 +240,40 @@ function! EggheadMode()
 endfunction
 
 nnoremap <S-h> :GitGutterToggle<CR> :call EggheadMode()<CR>
+
+" prettier stuff
+" override the vim-prettier changing default prettier settings
+let g:prettier#config#single_quote = 'false'
+let g:prettier#config#trailing_comma = 'none'
+let g:prettier#config#bracket_spacing = 'true'
+let g:prettier#config#jsx_bracket_same_line = 'false'
+let g:prettier#config#parser = 'babylon'
+
+let g:PrettierToggle = 1
+augroup prettier
+    autocmd!
+    autocmd BufWritePre *.js,*.css,*.scss,*.less PrettierAsync
+augroup END
+
+function! TogglePrettier()
+    " Switch the toggle variable
+    let g:PrettierToggle = !get(g:, 'PrettierToggle', 1)
+
+    " Reset group
+    augroup prettier
+        autocmd!
+    augroup END
+
+    " Enable if toggled on
+    if g:PrettierToggle
+        augroup prettier
+            autocmd! BufWritePre *.js,*.css,*.scss,*.less PrettierAsync
+        augroup END
+    endif
+endfunction
+
+
+nnoremap <leader>pr :call TogglePrettier()<CR>
 
 " Large file management
 let g:large_file = 1024 * 1024 * 5 " 5 MB
@@ -277,6 +322,8 @@ augroup file_type_settings " {
 
   au FileType haskell setlocal softtabstop=2 tabstop=2 shiftwidth=2 textwidth=0
 
+  au FileType go setlocal softtabstop=4 tabstop=4 noexpandtab shiftwidth=4 autoindent
+
   au FileType javascript setlocal suffixesadd+=.js,.jsx
 
   au FileType elm map <Leader>m :ElmMake<CR>
@@ -288,6 +335,7 @@ augroup file_type_settings " {
   au FileType elm map <Leader>f :ElmFormat<CR>
 
   au FileType markdown setlocal wrap lbr spell
+  au FileType markdown nnoremap <Leader>g :Goyo<CR>
 
   au BufRead,BufNewFile *.icss setlocal ft=css
   au BufRead,BufNewFile *.istyl setlocal ft=stylus
@@ -296,8 +344,6 @@ augroup file_type_settings " {
 
   " These are all actually ruby files
   au BufRead,BufNewFile {Gemfile,Rakefile,Vagrantfile,config.ru,*.gemspec} setlocal ft=ruby
-
-  au BufRead,BufNewFile {*.html} setlocal ft=spacebars,html
 
   au BufRead,BufNewFile *.java setlocal ft=java
 augroup END " }
@@ -308,33 +354,21 @@ augroup reload_vimrc " {
   autocmd BufWritePost $MYVIMRC source $MYVIMRC
 augroup END " }
 
-augroup prettier " {
-  " run prettier on file save
-  "autocmd BufWritePre *.js Neoformat
-augroup END " }
 
 " Elm stuff
 let g:elm_jump_to_error = 0
 let g:elm_setup_keybindings = 0
 
-" syntastic stuff
-" use eslint for javascript
-let g:syntastic_javascript_checkers = ["eslint"]
+" Neoformat stuff
+"let g:neoformat_run_all_formatters = 1
+"let g:neoformat_enabled_javascript = ['prettier']
 
-" elm woo
-let g:syntastic_elm_checkers = ["elm_make"]
-
-let g:syntastic_enable_elixir_checker = 1
-" TODO: why doesn't this work?
-let g:syntastic_elixir_checkers = ["elixir"]
-
-" check syntax on file open
-let g:syntastic_check_on_open = 1
-" close on no errors, open on errors
-let g:syntastic_aggregate_errors = 1
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 2
-let g:syntastic_haskell_checkers = ['hdevtools']
+" check syntax on save
+let g:ale_lint_on_text_changed = 'never'
+" use the globally installed flow (makes it easier to reproduce errors on
+" command line, harder to manage different versions of flow per project
+let g:javascript_flow_use_global = 0
+let g:ale_statusline_format = ['⨉ %d', '⚠ %d', '⬥ ok']
 
 " rainbow parens
 let g:rainbow_active = 0
