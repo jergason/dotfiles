@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 
 set -e
-set -x
 
 # use with get_confirmation "install rust" etc
 get_confirmation() {
-  cecho "Do you want to $1? ([y]/n)" "$red"
+  echo "Do you want to $1? ([y]/n)"
   read -r user_input
 
   if [ -z "$user_input" ] || [ "$user_input" == "y" ] || [ "$user_input" == "Y" ]; then
@@ -15,29 +14,18 @@ get_confirmation() {
   fi
 }
 
-# Set the colours you can use
-red='\033[0;31m'
-green='\033[0;32m'
-
-
-#  Reset text attributes to normal + without clearing screen.
-alias Reset="tput sgr0"
-
-# Color-echo.
-# arg $1 = message
-# arg $2 = Color
-cecho() {
-  echo "${2}${1}"
-  Reset # Reset to normal.
-  return
+function backup_dotfile_if_exists() {
+  if [ -e "$1" ]; then
+    mv "$1" "${1}.bak"
+  fi
 }
 
 echo ""
-cecho "┌────────────────────────┐" "$green"
-cecho "│                        │" "$green"
-cecho "│💻 Let's Get Set Up 💻  │" "$green"
-cecho "│                        │" "$green"
-cecho "└────────────────────────┘" "$green"
+echo "┌────────────────────────┐"
+echo "│                        │"
+echo "│💻 Let's Get Set Up 💻  │"
+echo "│                        │"
+echo "└────────────────────────┘"
 echo ""
 
 DOTFILES_DIR=$(dirname "$0")
@@ -82,10 +70,17 @@ if get_confirmation "install fonts"; then
   git clone git@github.com:ryanoasis/nerd-fonts.git && cd nerd-fonts && ./install.sh
 fi
 
+# we do this first so we don't mess up our about-to-be-fresh dotfiles
+if get_confirmation "install ohmyzsh"; then
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+fi
+
 if get_confirmation "install dotfiles"; then
   cd "$DOTFILES_DIR"
   # symlink .zshrc and .git_config
+  backup_dotfile_if_exists ~/.zshrc
   ln -s .zshrc ~/.zshrc
+  backup_dotfile_if_exists ~/.gitconfig
   ln -s .gitcofig ~/.gitconfig
 fi
 
