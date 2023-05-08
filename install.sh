@@ -39,8 +39,9 @@ if get_confirmation "install homebrew"; then
   # install homebrew
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-  # install core packages
-  xargs brew install < ./homebrew-packages.txt
+  if get_confirmation "install core homebrew packages (needed for neovim)"; then
+    xargs brew install < ./homebrew-packages.txt
+  fi
 
   # remember to set up java
   # sudo ln -sfn /usr/local/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk
@@ -72,7 +73,7 @@ if get_confirmation "install fonts"; then
   git clone git@github.com:ryanoasis/nerd-fonts.git && cd nerd-fonts && ./install.sh
 fi
 
-# we do this first so we don't mess up our about-to-be-fresh dotfiles
+# we do this first so we don't mess up our dotfiles, which assume zsh is installed
 if get_confirmation "install ohmyzsh"; then
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 fi
