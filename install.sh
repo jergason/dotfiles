@@ -28,7 +28,9 @@ echo "│                        │"
 echo "└────────────────────────┘"
 echo ""
 
-DOTFILES_DIR=$(dirname "$0")
+# https://stackoverflow.com/questions/59895/how-do-i-get-the-directory-where-a-bash-script-is-located-from-within-the-script
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+echo "dotfiles dir is ${SCRIPT_DIR}"
 CODE_DIR=~/code
 mkdir -p "$CODE_DIR"
 
@@ -76,12 +78,11 @@ if get_confirmation "install ohmyzsh"; then
 fi
 
 if get_confirmation "install dotfiles"; then
-  cd "$DOTFILES_DIR"
   # symlink .zshrc and .git_config
   backup_dotfile_if_exists ~/.zshrc
-  ln -s .zshrc ~/.zshrc
+  ln -s "${SCRIPT_DIR}/.zshrc" ~/.zshrc
   backup_dotfile_if_exists ~/.gitconfig
-  ln -s .gitcofig ~/.gitconfig
+  ln -s "${SCRIPT_DIR}/.gitconfig" ~/.gitconfig
 fi
 
 
