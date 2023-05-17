@@ -24,6 +24,8 @@ luarocks
 menumeters
 ninja
 ripgrep
+rbenv
+ruby-build
 shellcheck
 silicon
 tmux
