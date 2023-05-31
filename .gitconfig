@@ -16,3 +16,5 @@
 	branch = auto
 [core]
 	editor = vim
+[init]
+	defaultBranch = main
