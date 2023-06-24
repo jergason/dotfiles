@@ -103,6 +103,19 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
+# set terminal tab titles to CWD
+# from https://apple.stackexchange.com/a/377319
+# enjoy entering terminal escape code hell
+DISABLE_AUTO_TITLE="true"
+if [ $ITERM_SESSION_ID ]; then
+precmd() {
+  echo -ne "\033]0;${PWD##*/}\007"
+}
+fi
+
+# initialize opam
+[[ ! -r /Users/jamisondance/.opam/opam-init/init.zsh ]] || source /Users/jamisondance/.opam/opam-init/init.zsh  > /dev/null 2> /dev/null
+
 #Optionally source local stuff for creds and other things that don't go in source control
 if [ -f ~/.zshrc.local ]; then
   source ~/.zshrc.local
