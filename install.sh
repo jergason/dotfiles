@@ -72,10 +72,10 @@ fi
 
 if get_confirmation "install fonts"; then
   cd "$CODE_DIR"
-  git clone git@github.com:ryanoasis/nerd-fonts.git && cd nerd-fonts && ./install.sh
+  git clone --depth=1 git@github.com:ryanoasis/nerd-fonts.git && cd nerd-fonts && ./install.sh
 fi
 
-# we do this first so we don't mess up our dotfiles, which assume zsh is installed
+# we do this first so we don't mess up our dotfiles, which assume ohmyzsh is installed
 if get_confirmation "install ohmyzsh"; then
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 fi
