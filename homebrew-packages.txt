@@ -6,6 +6,7 @@ clojure
 cmake
 coreutils
 curl
+difftastic
 fd
 ffmpeg
 fnlfmt
