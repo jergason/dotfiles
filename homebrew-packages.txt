@@ -7,6 +7,7 @@ cmake
 coreutils
 curl
 difftastic
+direnv
 fd
 ffmpeg
 fnlfmt
