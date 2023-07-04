@@ -23,6 +23,7 @@ jesseduffield/lazydocker/lazydocker
 jpeg
 jq
 keycastr
+lazygit
 leiningen
 luarocks
 menumeters
