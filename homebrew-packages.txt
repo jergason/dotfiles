@@ -16,6 +16,7 @@ gh
 gifski
 git
 graphviz
+homebrew/cask/docker
 htop
 java
 jesseduffield/lazydocker/lazydocker
