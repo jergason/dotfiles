@@ -30,7 +30,6 @@ echo ""
 
 # https://stackoverflow.com/questions/59895/how-do-i-get-the-directory-where-a-bash-script-is-located-from-within-the-script
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-echo "dotfiles dir is ${SCRIPT_DIR}"
 CODE_DIR=~/code
 mkdir -p "$CODE_DIR"
 
@@ -39,7 +38,7 @@ if get_confirmation "install homebrew"; then
   # install homebrew
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-  if get_confirmation "install core homebrew packages (needed for neovim)"; then
+  if get_confirmation "install homebrew packages"; then
     xargs brew install < ./homebrew-packages.txt
   fi
 
