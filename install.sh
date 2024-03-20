@@ -34,6 +34,15 @@ CODE_DIR=~/code
 mkdir -p "$CODE_DIR"
 
 
+if get_confirmation "install dotfiles"; then
+  # symlink .zshrc and .git_config
+  backup_dotfile_if_exists ~/.zshrc
+  ln -s "${SCRIPT_DIR}/.zshrc" ~/.zshrc
+  backup_dotfile_if_exists ~/.gitconfig
+  ln -s "${SCRIPT_DIR}/.gitconfig" ~/.gitconfig
+fi
+
+
 if get_confirmation "install homebrew"; then
   # install homebrew
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -65,7 +74,7 @@ if get_confirmation "install nvm"; then
   export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
   nvm install --lts
-  # allow managing yarn versions
+  # allow managing yarn/pnpm/etc versions
   corepack enable
 fi
 
@@ -79,15 +88,11 @@ if get_confirmation "install ohmyzsh"; then
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 fi
 
-if get_confirmation "install dotfiles"; then
-  # symlink .zshrc and .git_config
-  backup_dotfile_if_exists ~/.zshrc
-  ln -s "${SCRIPT_DIR}/.zshrc" ~/.zshrc
-  backup_dotfile_if_exists ~/.gitconfig
-  ln -s "${SCRIPT_DIR}/.gitconfig" ~/.gitconfig
-fi
-
 
 if get_confirmation "install rust"; then
   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+fi
+
+if get_confirmation "install autin (shell history fanciness)"; then
+  /bin/bash -c "$(curl --proto '=https' --tlsv1.2 -sSf https://setup.atuin.sh)"
 fi

@@ -1,4 +1,4 @@
-export PATH=$HOME/neovim/bin:$HOME/bin:/usr/local/bin:$PATH
+export PATH=$HOME/neovim/bin:$HOME/bin:/usr/local/bin:/opt/homebrew/bin:$PATH
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -7,7 +7,7 @@ export ZSH="$HOME/.oh-my-zsh"
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="ys"
+ZSH_THEME="lambda"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -25,7 +25,7 @@ ZSH_THEME="ys"
 # Uncomment one of the following lines to change the auto-update behavior
 # zstyle ':omz:update' mode disabled  # disable automatic updates
 # zstyle ':omz:update' mode auto      # update automatically without asking
-# zstyle ':omz:update' mode reminder  # just remind me to update when it's time
+zstyle ':omz:update' mode reminder  # just remind me to update when it's time
 
 # Uncomment the following line to change how often to auto-update (in days).
 # zstyle ':omz:update' frequency 13
@@ -81,14 +81,12 @@ source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
-export EDITOR='vim'
+export EDITOR='nvim'
 
 # Set personal aliases, overriding those provided by oh-my-zsh libs,
 # plugins, and themes. Aliases can be placed here, though oh-my-zsh
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
 # For a full list of active aliases, run `alias`.
-
-alias vim=nvim
 alias gitclean='git branch --merged | grep -v "\*" | grep -v master | grep -v dev | grep -v yours-master | xargs -n 1 git branch -d'
 alias ll="ls -alh"
 alias ls="ls -G" # colors in ls
@@ -102,23 +100,11 @@ ssh-add -A &> /dev/null
 autoload -Uz compinit && compinit
 
 
-# iterm2 shell integration
-source ~/.iterm2_shell_integration.zsh
-
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-# set terminal tab titles to CWD
-# from https://apple.stackexchange.com/a/377319
-# enjoy entering terminal escape code hell
-DISABLE_AUTO_TITLE="true"
-if [ $ITERM_SESSION_ID ]; then
-precmd() {
-  echo -ne "\033]0;${PWD##*/}\007"
-}
-fi
-
+# automatically use .nvmrc file to control node version if entering a directory that has one
 # place this after nvm initialization!
 autoload -U add-zsh-hook
 
@@ -147,10 +133,13 @@ load-nvmrc
 # opam configuration
 [[ ! -r $HOME/.opam/opam-init/init.zsh ]] || source $HOME/.opam/opam-init/init.zsh  > /dev/null 2> /dev/null
 
+# load .env files
 eval "$(direnv hook zsh)"
+
+# load autin for fancier history
+eval "$(atuin init zsh)"
 
 #Optionally source local stuff for creds and other things that don't go in source control
 if [ -f ~/.zshrc.local ]; then
   source ~/.zshrc.local
 fi
-
