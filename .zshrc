@@ -88,6 +88,10 @@ export EDITOR='nvim'
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
 # For a full list of active aliases, run `alias`.
 alias gitclean='git branch --merged | grep -v "\*" | grep -v master | grep -v dev | grep -v yours-master | xargs -n 1 git branch -d'
+alias gpu='git push -u origin head'
+alias gpf='git push -f origin head'
+alias gca='git commit --amend --no-edit'
+
 alias ll="ls -alh"
 alias ls="ls -G" # colors in ls
 alias search_history="history | awk '{print $2}' | sort | uniq -c | sort -rn | head -10"
@@ -138,6 +142,10 @@ eval "$(direnv hook zsh)"
 
 # load autin for fancier history
 eval "$(atuin init zsh)"
+
+# remind myself when I use a command that has an alias
+source "$HOME/code/dotfiles/alias_reminder.zsh"
+update_alias_map
 
 #Optionally source local stuff for creds and other things that don't go in source control
 if [ -f ~/.zshrc.local ]; then
