@@ -33,6 +33,11 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 CODE_DIR=~/code
 mkdir -p "$CODE_DIR"
 
+if get_confirmation "get ghostty shaders"; then
+  git clone git@github.com:hackr-sh/ghostty-shaders.git ~/.config/ghostty/shaders
+  git clone git@github.com:KroneCorylus/ghostty-shader-playground.git ~/.config/ghostty/ghostty-shader-playground
+fi
+
 
 if get_confirmation "install dotfiles"; then
   # symlink .zshrc and .git_config
@@ -40,6 +45,10 @@ if get_confirmation "install dotfiles"; then
   ln -s "${SCRIPT_DIR}/.zshrc" ~/.zshrc
   backup_dotfile_if_exists ~/.gitconfig
   ln -s "${SCRIPT_DIR}/.gitconfig" ~/.gitconfig
+
+  mkdir -p ~/.config/ghostty
+  backup_dotfile_if_exists ~/.config/ghostty/config
+  ln -s "${SCRIPT_DIR}/ghostty-config" ~/.config/ghostty/config
 fi
 
 
