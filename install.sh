@@ -49,6 +49,9 @@ if get_confirmation "install dotfiles"; then
   mkdir -p ~/.config/ghostty
   backup_dotfile_if_exists ~/.config/ghostty/config
   ln -s "${SCRIPT_DIR}/ghostty-config" ~/.config/ghostty/config
+
+  backup_dotfile_if_exists ~/.tmux.conf
+  ln -s "${SCRIPT_DIR}/tmux.conf" ~/.tmux.conf
 fi
 
 

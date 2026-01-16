@@ -1,2 +1,3 @@
 .DS_Store
 shaders
+.claude/settings.local.json

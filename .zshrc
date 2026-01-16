@@ -150,3 +150,6 @@ eval "$(atuin init zsh)"
 if [ -f ~/.zshrc.local ]; then
   source ~/.zshrc.local
 fi
+
+# Added by Antigravity
+export PATH="/Users/jamisondance/.antigravity/antigravity/bin:$PATH"
