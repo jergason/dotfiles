@@ -1,0 +1,119 @@
+#!/usr/bin/env bash
+# tmux-notify: surface claude code notifications in tmux
+# usage: echo '{"message":"...","title":"..."}' | tmux-notify [--type notify|stop]
+
+set -euo pipefail
+
+# --- parse args ---
+TYPE="notify"
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --type) TYPE="$2"; shift 2 ;;
+    --clear) TYPE="clear"; shift ;;
+    *) shift ;;
+  esac
+done
+
+# --- clear mode: just unset notification options and exit ---
+if [ "$TYPE" = "clear" ]; then
+  cat > /dev/null  # drain stdin (hook always pipes JSON)
+  [ -z "${TMUX:-}" ] && exit 0
+  WINDOW=$(tmux display-message -t "$TMUX_PANE" -p '#{window_id}')
+  tmux set-option -wu -t "$WINDOW" @notify_msg 2>/dev/null
+  tmux set-option -wu -t "$WINDOW" @notify_icon 2>/dev/null
+  tmux set-option -wu -t "$WINDOW" @notify_type 2>/dev/null
+  tmux set-option -wu -t "$WINDOW" @notify_time 2>/dev/null
+  exit 0
+fi
+
+# --- parse fields from stdin JSON ---
+INPUT=$(cat)
+
+if [ "$TYPE" = "stop" ]; then
+  MESSAGE=$(echo "$INPUT" | jq -r '.last_assistant_message // "done"' 2>/dev/null || echo "done")
+  TITLE="Stopped"
+  NTYPE="stop"
+  ICON="⏹"
+else
+  MESSAGE=$(echo "$INPUT" | jq -r '.message // "awaiting input"' 2>/dev/null || echo "awaiting input")
+  TITLE=$(echo "$INPUT" | jq -r '.title // "Notification"' 2>/dev/null || echo "Notification")
+  NTYPE=$(echo "$INPUT" | jq -r '.notification_type // "unknown"' 2>/dev/null || echo "unknown")
+  ICON="🔔"
+  case "$NTYPE" in
+    permission_prompt) ICON="🔐" ;;
+    idle_prompt)       ICON="💬" ;;
+    elicitation_dialog) ICON="❓" ;;
+    auth_success)      ICON="✅" ;;
+  esac
+fi
+
+# extract project name from cwd
+PROJECT=$(echo "$INPUT" | jq -r '.cwd // ""' 2>/dev/null | xargs basename 2>/dev/null || echo "")
+
+# truncate message for window tab
+SHORT_MSG="${MESSAGE:0:35}"
+[ ${#MESSAGE} -gt 35 ] && SHORT_MSG="${SHORT_MSG}…"
+
+TAB_MSG="$SHORT_MSG"
+
+# bail if not in tmux
+[ -z "${TMUX:-}" ] && exit 0
+
+PANE="$TMUX_PANE"
+WINDOW=$(tmux display-message -t "$PANE" -p '#{window_id}')
+WINDOW_INDEX=$(tmux display-message -t "$PANE" -p '#{window_index}')
+ACTIVE_WINDOW=$(tmux display-message -p '#{active_window_index}')
+
+IS_FOCUSED=false
+[ "$WINDOW_INDEX" = "$ACTIVE_WINDOW" ] && IS_FOCUSED=true
+
+# --- layer 1: bell (only for background windows) ---
+if [ "$IS_FOCUSED" = false ]; then
+  tmux run-shell -t "$PANE" "printf '\\a'"
+fi
+
+# --- layer 2: per-window status annotation (always) ---
+tmux set-option -w -t "$WINDOW" @notify_msg "$TAB_MSG"
+tmux set-option -w -t "$WINDOW" @notify_icon "$ICON"
+tmux set-option -w -t "$WINDOW" @notify_type "$NTYPE"
+tmux set-option -w -t "$WINDOW" @notify_time "$(date +%H:%M)"
+
+# auto-clear after 5 minutes
+tmux run-shell -b -d 300 \
+  "tmux set-option -wu -t $WINDOW @notify_msg 2>/dev/null; \
+   tmux set-option -wu -t $WINDOW @notify_icon 2>/dev/null; \
+   tmux set-option -wu -t $WINDOW @notify_type 2>/dev/null; \
+   tmux set-option -wu -t $WINDOW @notify_time 2>/dev/null"
+
+# --- layer 3: popup (only for focused window) ---
+# uses a temp bash script to avoid zsh/sh compatibility issues with read -n1
+if [ "$IS_FOCUSED" = true ]; then
+  POPUP_SCRIPT=$(mktemp /tmp/tmux-notify.XXXXXX)
+
+  # build popup script using a quoted heredoc so message content
+  # passes through with zero interpretation (handles quotes, $, `, etc)
+  {
+    echo '#!/bin/bash'
+    echo 'cat << '"'"'__NOTIFY__'"'"''
+    echo ""
+    echo "  $ICON  $TITLE"
+    echo ""
+    if [ -n "$PROJECT" ]; then
+      echo "  📁 $PROJECT"
+      echo ""
+    fi
+    echo "  $MESSAGE"
+    echo ""
+    echo "  (press ESC to dismiss)"
+    echo '__NOTIFY__'
+    echo 'while true; do read -n1 -s key; [[ "$key" == $'"'"'\e'"'"' ]] && break; done'
+  } > "$POPUP_SCRIPT"
+
+  chmod +x "$POPUP_SCRIPT"
+
+  POPUP_H=8
+  [ -n "$PROJECT" ] && POPUP_H=10
+
+  tmux display-popup -w 60% -h "$POPUP_H" -E \
+    "bash '$POPUP_SCRIPT'; rm -f '$POPUP_SCRIPT'"
+fi

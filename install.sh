@@ -55,6 +55,14 @@ if get_confirmation "install dotfiles"; then
 fi
 
 
+if get_confirmation "install scripts (tmux-notify, etc)"; then
+  mkdir -p ~/bin
+  backup_dotfile_if_exists ~/bin/tmux-notify
+  ln -s "${SCRIPT_DIR}/bin/tmux-notify" ~/bin/tmux-notify
+  chmod +x "${SCRIPT_DIR}/bin/tmux-notify"
+fi
+
+
 if get_confirmation "install homebrew"; then
   # install homebrew
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
