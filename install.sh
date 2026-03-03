@@ -60,6 +60,15 @@ if get_confirmation "install scripts (tmux-notify, etc)"; then
   backup_dotfile_if_exists ~/bin/tmux-notify
   ln -s "${SCRIPT_DIR}/bin/tmux-notify" ~/bin/tmux-notify
   chmod +x "${SCRIPT_DIR}/bin/tmux-notify"
+
+  mkdir -p ~/.config/opencode/plugins
+  for plugin_path in "${SCRIPT_DIR}"/opencode/plugins/*; do
+    [ -f "$plugin_path" ] || continue
+    plugin_name=$(basename "$plugin_path")
+    plugin_target="${HOME}/.config/opencode/plugins/${plugin_name}"
+    backup_dotfile_if_exists "$plugin_target"
+    ln -s "$plugin_path" "$plugin_target"
+  done
 fi
 
 
