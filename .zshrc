@@ -94,6 +94,8 @@ alias gpf='git push -f origin head'
 alias gpfn='git push --no-verify -f origin head'
 alias gca='git commit --amend --no-edit'
 alias gcan='git commit --no-verify --amend --no-edit'
+# show the diff that will appear in a PR
+alias gdpr='git fetch origin && git diff origin/main...HEAD'
 
 alias ll="ls -alh"
 alias ls="ls -G" # colors in ls
