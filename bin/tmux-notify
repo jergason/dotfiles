@@ -1,8 +1,60 @@
 #!/usr/bin/env bash
-# tmux-notify: surface claude code notifications in tmux
+# tmux-notify: surface coding-agent notifications in tmux
 # usage: echo '{"message":"...","title":"..."}' | tmux-notify [--type notify|stop]
 
 set -euo pipefail
+
+pane_exists() {
+  [ -n "${1:-}" ] || return 1
+  tmux display-message -t "$1" -p '#{pane_id}' >/dev/null 2>&1
+}
+
+pane_is_opencode() {
+  [ -n "${1:-}" ] || return 1
+  local cmd
+  cmd=$(tmux display-message -t "$1" -p '#{pane_current_command}' 2>/dev/null || true)
+  [ "$cmd" = "opencode" ] || [ "$cmd" = "node" ]
+}
+
+resolve_pane() {
+  local requested="${1:-}"
+  local cwd="${2:-}"
+  local candidate=""
+
+  if pane_exists "$requested"; then
+    if [ -z "$cwd" ] || pane_is_opencode "$requested"; then
+      printf '%s' "$requested"
+      return
+    fi
+  fi
+
+  if [ -n "$cwd" ]; then
+    candidate=$(tmux list-panes -a -F '#{pane_id}\t#{pane_current_path}\t#{pane_current_command}' 2>/dev/null | while IFS=$'\t' read -r pane path cmd; do
+      [ "$path" = "$cwd" ] || continue
+      [ "$cmd" = "opencode" ] || [ "$cmd" = "node" ] || continue
+      printf '%s' "$pane"
+      break
+    done)
+
+    if pane_exists "$candidate"; then
+      printf '%s' "$candidate"
+      return
+    fi
+  fi
+
+  if pane_exists "${TMUX_PANE:-}"; then
+    printf '%s' "$TMUX_PANE"
+    return
+  fi
+
+  candidate=$(tmux display-message -p '#{pane_id}' 2>/dev/null || true)
+  if pane_exists "$candidate"; then
+    printf '%s' "$candidate"
+    return
+  fi
+
+  printf ''
+}
 
 # --- parse args ---
 TYPE="notify"
@@ -14,20 +66,24 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+# --- parse fields from stdin JSON ---
+INPUT=$(cat)
+RAW_CWD=$(echo "$INPUT" | jq -r '.cwd // ""' 2>/dev/null || echo "")
+RAW_PANE=$(echo "$INPUT" | jq -r '.tmux_pane // ""' 2>/dev/null || echo "")
+
 # --- clear mode: just unset notification options and exit ---
 if [ "$TYPE" = "clear" ]; then
-  cat > /dev/null  # drain stdin (hook always pipes JSON)
   [ -z "${TMUX:-}" ] && exit 0
-  WINDOW=$(tmux display-message -t "$TMUX_PANE" -p '#{window_id}')
+  PANE=$(resolve_pane "$RAW_PANE" "$RAW_CWD")
+  [ -z "$PANE" ] && exit 0
+  WINDOW=$(tmux display-message -t "$PANE" -p '#{window_id}' 2>/dev/null || true)
+  [ -z "$WINDOW" ] && exit 0
   tmux set-option -wu -t "$WINDOW" @notify_msg 2>/dev/null
   tmux set-option -wu -t "$WINDOW" @notify_icon 2>/dev/null
   tmux set-option -wu -t "$WINDOW" @notify_type 2>/dev/null
   tmux set-option -wu -t "$WINDOW" @notify_time 2>/dev/null
   exit 0
 fi
-
-# --- parse fields from stdin JSON ---
-INPUT=$(cat)
 
 if [ "$TYPE" = "stop" ]; then
   MESSAGE=$(echo "$INPUT" | jq -r '.last_assistant_message // "done"' 2>/dev/null || echo "done")
@@ -40,15 +96,17 @@ else
   NTYPE=$(echo "$INPUT" | jq -r '.notification_type // "unknown"' 2>/dev/null || echo "unknown")
   ICON="🔔"
   case "$NTYPE" in
-    permission_prompt) ICON="🔐" ;;
-    idle_prompt)       ICON="💬" ;;
+    permission_prompt)  ICON="🔐" ;;
+    idle_prompt)        ICON="💬" ;;
     elicitation_dialog) ICON="❓" ;;
-    auth_success)      ICON="✅" ;;
+    auth_success)       ICON="✅" ;;
+    session_complete)   ICON="✅" ;;
+    session_error)      ICON="🚨" ;;
   esac
 fi
 
 # extract project name from cwd
-PROJECT=$(echo "$INPUT" | jq -r '.cwd // ""' 2>/dev/null | xargs basename 2>/dev/null || echo "")
+PROJECT=$(printf '%s' "$RAW_CWD" | xargs basename 2>/dev/null || echo "")
 
 # truncate message for window tab
 SHORT_MSG="${MESSAGE:0:35}"
@@ -59,8 +117,11 @@ TAB_MSG="$SHORT_MSG"
 # bail if not in tmux
 [ -z "${TMUX:-}" ] && exit 0
 
-PANE="$TMUX_PANE"
-WINDOW=$(tmux display-message -t "$PANE" -p '#{window_id}')
+PANE=$(resolve_pane "$RAW_PANE" "$RAW_CWD")
+[ -z "$PANE" ] && exit 0
+
+WINDOW=$(tmux display-message -t "$PANE" -p '#{window_id}' 2>/dev/null || true)
+[ -z "$WINDOW" ] && exit 0
 WINDOW_INDEX=$(tmux display-message -t "$PANE" -p '#{window_index}')
 ACTIVE_WINDOW=$(tmux display-message -p '#{active_window_index}')
 
@@ -69,7 +130,8 @@ IS_FOCUSED=false
 
 # --- layer 1: bell (only for background windows) ---
 if [ "$IS_FOCUSED" = false ]; then
-  tmux run-shell -t "$PANE" "printf '\\a'"
+  PANE_TTY=$(tmux display-message -t "$PANE" -p '#{pane_tty}' 2>/dev/null || true)
+  [ -n "$PANE_TTY" ] && printf '\a' > "$PANE_TTY" 2>/dev/null || true
 fi
 
 # --- layer 2: per-window status annotation (always) ---
