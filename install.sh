@@ -52,6 +52,19 @@ if get_confirmation "install dotfiles"; then
 
   backup_dotfile_if_exists ~/.tmux.conf
   ln -s "${SCRIPT_DIR}/tmux.conf" ~/.tmux.conf
+
+  # install/update tmux plugin manager (tpm)
+  TPM_DIR="$HOME/.tmux/plugins/tpm"
+  mkdir -p "$HOME/.tmux/plugins"
+  if [ -d "$TPM_DIR/.git" ]; then
+    git -C "$TPM_DIR" pull --ff-only
+  elif [ -e "$TPM_DIR" ]; then
+    echo "Skipping TPM install: $TPM_DIR exists and is not a git repo."
+  else
+    git clone https://github.com/tmux-plugins/tpm "$TPM_DIR"
+  fi
+
+  echo "TPM ready. In tmux, run prefix + I to install plugins."
 fi
 
 
