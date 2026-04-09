@@ -96,6 +96,12 @@ alias gca='git commit --amend --no-edit'
 alias gcan='git commit --no-verify --amend --no-edit'
 # show the diff that will appear in a PR
 alias gdpr='git fetch origin && git diff origin/main...HEAD'
+# https://piechowski.io/post/git-commands-before-reading-code/
+alias gchg='git log --format=format: --name-only --since="1 year ago" | sort | uniq -c | grep -vE "pnpm-lock.yaml|package.json" | sort -nr | head -20'
+alias gwho='git shortlog -sn --no-merges'
+alias gbugs='git log -i -E --grep="fix|bug|broken" --name-only --format="" | sort | uniq -c | grep -vE "pnpm-lock.yaml|yarn.lock|package.json" | sort -nr | head -20'
+alias gspeed='git log --format="%ad" --date=format:"%Y-%m" | sort | uniq -c'
+alias gfire='git log --oneline --since="1 year ago" | grep -iE "revert|hotfix|emergency|rollback"'
 
 alias ll="ls -alh"
 alias ls="ls -G" # colors in ls
@@ -155,3 +161,6 @@ fi
 
 # Added by Antigravity
 export PATH="/Users/jamisondance/.antigravity/antigravity/bin:$PATH"
+
+# Vite+ bin (https://viteplus.dev)
+. "$HOME/.vite-plus/env"
