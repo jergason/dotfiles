@@ -1,0 +1,175 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+line="${1-}"
+cursor_x="${2-}"
+fallback_word="${3-}"
+hyperlink="${4-}"
+pane_path="${5-}"
+pane_id="${6-}"
+
+show_message() {
+  local msg="$1"
+  if [ -n "$pane_id" ]; then
+    tmux display-message -t "$pane_id" "$msg" >/dev/null 2>&1 || true
+  else
+    tmux display-message "$msg" >/dev/null 2>&1 || true
+  fi
+}
+
+is_space() {
+  local ch="$1"
+  [[ "$ch" =~ [[:space:]] ]]
+}
+
+trim_token() {
+  local s="$1"
+
+  while [ -n "$s" ]; do
+    case "${s:0:1}" in
+      " "|$'\t'|$'\r'|$'\n'|\"|\'|\(|\[|\{|\<)
+        s="${s:1}"
+        ;;
+      *)
+        break
+        ;;
+    esac
+  done
+
+  while [ -n "$s" ]; do
+    case "${s: -1}" in
+      " "|$'\t'|$'\r'|$'\n'|\"|\'|\)|\]|\}|\>|,|.|\;|:|!|\?)
+        s="${s:0:${#s}-1}"
+        ;;
+      *)
+        break
+        ;;
+    esac
+  done
+
+  printf '%s' "$s"
+}
+
+extract_space_token() {
+  local s="$1"
+  local x="$2"
+  local len=${#s}
+
+  if [ "$len" -eq 0 ]; then
+    printf ''
+    return
+  fi
+
+  if ! [[ "$x" =~ ^[0-9]+$ ]]; then
+    x=0
+  fi
+
+  if [ "$x" -ge "$len" ]; then
+    x=$((len - 1))
+  fi
+
+  local ch="${s:x:1}"
+  if is_space "$ch"; then
+    local left=$((x - 1))
+    while [ "$left" -ge 0 ]; do
+      ch="${s:left:1}"
+      if ! is_space "$ch"; then
+        x=$left
+        break
+      fi
+      left=$((left - 1))
+    done
+
+    if is_space "${s:x:1}"; then
+      local right=$((x + 1))
+      while [ "$right" -lt "$len" ]; do
+        ch="${s:right:1}"
+        if ! is_space "$ch"; then
+          x=$right
+          break
+        fi
+        right=$((right + 1))
+      done
+    fi
+
+    if is_space "${s:x:1}"; then
+      printf ''
+      return
+    fi
+  fi
+
+  local start=$x
+  while [ "$start" -gt 0 ]; do
+    local prev=$((start - 1))
+    ch="${s:prev:1}"
+    if is_space "$ch"; then
+      break
+    fi
+    start=$prev
+  done
+
+  local end=$x
+  while [ "$end" -lt $((len - 1)) ]; do
+    local next=$((end + 1))
+    ch="${s:next:1}"
+    if is_space "$ch"; then
+      break
+    fi
+    end=$next
+  done
+
+  printf '%s' "${s:start:end-start+1}"
+}
+
+open_target() {
+  local raw="$1"
+  local target="$raw"
+
+  case "$raw" in
+    http://*|https://*|file://*|mailto:*)
+      target="$raw"
+      ;;
+    www.*|*.*/*)
+      target="https://$raw"
+      ;;
+    *.*)
+      target="https://$raw"
+      ;;
+    localhost|localhost:*|localhost/*)
+      target="http://$raw"
+      ;;
+  esac
+
+  if [ -n "$pane_path" ] && [ -d "$pane_path" ]; then
+    cd "$pane_path" || true
+  fi
+
+  if open "$target" >/dev/null 2>&1; then
+    return
+  fi
+
+  if [ "$target" != "$raw" ] && open "$raw" >/dev/null 2>&1; then
+    return
+  fi
+
+  show_message "could not open: $raw"
+}
+
+if [ -n "$hyperlink" ]; then
+  open_target "$hyperlink"
+  exit 0
+fi
+
+candidate="$(extract_space_token "$line" "$cursor_x")"
+if [ -z "$candidate" ]; then
+  candidate="$fallback_word"
+fi
+
+candidate="$(trim_token "$candidate")"
+if [ -z "$candidate" ]; then
+  show_message "no URL under cursor"
+  exit 0
+fi
+
+open_target "$candidate"

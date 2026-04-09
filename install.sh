@@ -74,6 +74,10 @@ if get_confirmation "install scripts (tmux-notify, etc)"; then
   ln -s "${SCRIPT_DIR}/bin/tmux-notify" ~/bin/tmux-notify
   chmod +x "${SCRIPT_DIR}/bin/tmux-notify"
 
+  backup_dotfile_if_exists ~/bin/tmux-open-under-cursor
+  ln -s "${SCRIPT_DIR}/bin/tmux-open-under-cursor" ~/bin/tmux-open-under-cursor
+  chmod +x "${SCRIPT_DIR}/bin/tmux-open-under-cursor"
+
   mkdir -p ~/.config/opencode/plugins
   for plugin_path in "${SCRIPT_DIR}"/opencode/plugins/*; do
     [ -f "$plugin_path" ] || continue
