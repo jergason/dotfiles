@@ -4,12 +4,22 @@
 	co = checkout
 	ci = commit
 	st = status
-	br = branch
-  lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --
-	grog = log --graph --abbrev-commit --decorate --all --format=format:\"%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(dim white) - %an%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n %C(white)%s%C(reset)\"
+	lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --
+	grog = log --graph --abbrev-commit --decorate --all --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(dim white) - %an%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n %C(white)%s%C(reset)'
+	# Difftastic aliases, so `git dlog -p` is `git log -p`
+	# with difftastic and likewise for the other subcommands.
+	dlog = -c diff.external=difft log --ext-diff
+	dshow = -c diff.external=difft show --ext-diff
+	ddiff = -c diff.external=difft diff
+	# `git log` with patches shown with difftastic.
+	dl = -c diff.external=difft log -p --ext-diff --patch
+	# Show the most recent commit with difftastic.
+	ds = -c diff.external=difft show --ext-diff
+	# `git diff` with difftastic.
+	dft = -c diff.external=difft diff
 [user]
 	name = Jamison Dance
-	email = jamison@droplet.io
+	email = hi@jamison.dance
 [color]
 	diff = auto
 	status = auto
@@ -25,9 +35,13 @@
 	process = git-lfs filter-process
 	required = true
 [difftool "difftastic"]
-    # See `man git-difftool` for a description of MERGED, LOCAL and REMOTE.
-    cmd = difft "$MERGED" "$LOCAL" "abcdef1" "100644" "$REMOTE" "abcdef2" "100644"
+	# See `man git-difftool` for a description of MERGED, LOCAL and REMOTE.
+	cmd = difft "$MERGED" "$LOCAL" "abcdef1" "100644" "$REMOTE" "abcdef2" "100644"
 [pull]
 	ff = only
 [push]
 	autoSetupRemote = true
+[credential "https://github.com"]
+	helper = !/opt/homebrew/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = !/opt/homebrew/bin/gh auth git-credential
