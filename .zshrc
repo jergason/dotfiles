@@ -158,3 +158,10 @@ eval "$(atuin init zsh)"
 if [ -f ~/.zshrc.local ]; then
   source ~/.zshrc.local
 fi
+
+# remind me when i type full commands that have aliases
+alias_reminder_script="${${(%):-%N}:A:h}/alias_reminder.zsh"
+if [ -f "$alias_reminder_script" ]; then
+  source "$alias_reminder_script"
+fi
+unset alias_reminder_script
