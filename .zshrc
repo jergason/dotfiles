@@ -105,7 +105,9 @@ alias gfire='git log --oneline --since="1 year ago" | grep -iE "revert|hotfix|em
 
 alias ll="ls -alh"
 alias ls="ls -G" # colors in ls
-alias search_history="history | awk '{print $2}' | sort | uniq -c | sort -rn | head -10"
+
+# grep processes but keep header row
+alias psaux="ps aux | head -1; ps aux | grep"
 
 # make sure to use keychain for ssh key passphrase
 ssh-add -K ~/.ssh/id_ed25519 &> /dev/null
