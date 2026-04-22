@@ -36,8 +36,8 @@ zstyle ':omz:update' mode reminder  # just remind me to update when it's time
 # Uncomment the following line to disable colors in ls.
 # DISABLE_LS_COLORS="true"
 
-# Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
+# disable OMZ's auto-title; we set our own below (git-repo-aware)
+DISABLE_AUTO_TITLE="true"
 
 # Uncomment the following line to enable command auto-correction.
 # ENABLE_CORRECTION="true"
@@ -160,6 +160,25 @@ eval "$(atuin init zsh)"
 if [ -f ~/.zshrc.local ]; then
   source ~/.zshrc.local
 fi
+
+# tab title: git repo name + branch when in a repo, else cwd basename.
+# override per-tab from ghostty with ctrl+a , (prompt_tab_title).
+set_tab_title() {
+  local repo branch title
+  repo=$(git rev-parse --show-toplevel 2>/dev/null)
+  if [[ -n $repo ]]; then
+    branch=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)
+    title="${repo:t}${branch:+ · $branch}"
+  else
+    title="${PWD:t}"
+    [[ $PWD == $HOME ]] && title="~"
+    [[ $PWD == "/" ]] && title="/"
+  fi
+  # OSC 0 sets both icon (tab) and window title
+  printf '\e]0;%s\a' "$title"
+}
+add-zsh-hook precmd set_tab_title
+add-zsh-hook chpwd set_tab_title
 
 # remind me when i type full commands that have aliases
 alias_reminder_script="${${(%):-%N}:A:h}/alias_reminder.zsh"

@@ -3,6 +3,67 @@ font-family = "MesloLGM Nerd Font"
 # claude code magic
 keybind = shift+enter=text:\n
 
+# --- bell: let claude-code hooks ring \a, ghostty flashes + dock-bounces ---
+# defaults already include attention,title; adding system for mac notif/dock
+bell-features = system,attention,title
+
+# disable ghostty's own title-setting in shell-integration so our zsh precmd
+# (git-repo-aware) isn't clobbered. keep cursor/path features.
+shell-integration-features = cursor,no-sudo,no-title,no-ssh-env,no-ssh-terminfo,path
+
+# --- tmux-style ctrl+a chord prefix (layered on top of cmd+ defaults) ---
+
+# splits (tmux: prefix v / prefix s). cwd inherits via shell integration path feature.
+keybind = ctrl+a>v=new_split:right
+keybind = ctrl+a>s=new_split:down
+
+# pane nav (tmux: prefix hjkl)
+keybind = ctrl+a>h=goto_split:left
+keybind = ctrl+a>j=goto_split:down
+keybind = ctrl+a>k=goto_split:up
+keybind = ctrl+a>l=goto_split:right
+
+# pane resize (tmux: prefix HJKL). not repeatable — each press needs full chord.
+keybind = ctrl+a>shift+h=resize_split:left,5
+keybind = ctrl+a>shift+j=resize_split:down,5
+keybind = ctrl+a>shift+k=resize_split:up,5
+keybind = ctrl+a>shift+l=resize_split:right,5
+
+# zoom (tmux: prefix z)
+keybind = ctrl+a>z=toggle_split_zoom
+
+# tabs
+keybind = ctrl+a>c=new_tab
+keybind = ctrl+a>n=next_tab
+keybind = ctrl+a>p=previous_tab
+keybind = ctrl+a>grave_accent=last_tab
+
+# jump to tab N
+keybind = ctrl+a>1=goto_tab:1
+keybind = ctrl+a>2=goto_tab:2
+keybind = ctrl+a>3=goto_tab:3
+keybind = ctrl+a>4=goto_tab:4
+keybind = ctrl+a>5=goto_tab:5
+keybind = ctrl+a>6=goto_tab:6
+keybind = ctrl+a>7=goto_tab:7
+keybind = ctrl+a>8=goto_tab:8
+keybind = ctrl+a>9=goto_tab:9
+
+# kill pane
+keybind = ctrl+a>x=close_surface
+
+# scrollback search (tmux: prefix [ then /)
+keybind = ctrl+a>slash=start_search
+
+# reload config (tmux: prefix r)
+keybind = ctrl+a>r=reload_config
+
+# manually override tab title (overrides the zsh-set git-repo-name title)
+keybind = ctrl+a>comma=prompt_tab_title
+
+# send literal ctrl-a through (tmux: prefix C-a)
+keybind = ctrl+a>ctrl+a=text:\x01
+
 
 
 # shaders come from https://github.com/hackr-sh/ghostty-shaders
