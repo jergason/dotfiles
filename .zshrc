@@ -147,6 +147,9 @@ load-nvmrc() {
 add-zsh-hook chpwd load-nvmrc
 load-nvmrc
 
+# larger open files limit, its 2026
+ulimit -n 8192
+
 # opam configuration
 [[ ! -r $HOME/.opam/opam-init/init.zsh ]] || source $HOME/.opam/opam-init/init.zsh  > /dev/null 2> /dev/null
 
@@ -155,11 +158,6 @@ eval "$(direnv hook zsh)"
 
 # load autin for fancier history
 eval "$(atuin init zsh)"
-
-#Optionally source local stuff for creds and other things that don't go in source control
-if [ -f ~/.zshrc.local ]; then
-  source ~/.zshrc.local
-fi
 
 # tab title: git repo name + branch when in a repo, else cwd basename.
 # override per-tab from ghostty with ctrl+a , (prompt_tab_title).
@@ -186,3 +184,9 @@ if [ -f "$alias_reminder_script" ]; then
   source "$alias_reminder_script"
 fi
 unset alias_reminder_script
+
+#Optionally source local stuff for creds and other things that don't go in source control
+if [ -f ~/.zshrc.local ]; then
+  source ~/.zshrc.local
+fi
+
