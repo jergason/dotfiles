@@ -185,6 +185,13 @@ if [ -f "$alias_reminder_script" ]; then
 fi
 unset alias_reminder_script
 
+# directory-aware claude account switching (work vs personal)
+claude_account_script="${${(%):-%N}:A:h}/claude_account.zsh"
+if [ -f "$claude_account_script" ]; then
+  source "$claude_account_script"
+fi
+unset claude_account_script
+
 #Optionally source local stuff for creds and other things that don't go in source control
 if [ -f ~/.zshrc.local ]; then
   source ~/.zshrc.local
