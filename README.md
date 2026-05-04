@@ -13,18 +13,22 @@ To run, execute `install.sh`.
 - inside `~/code/drplt` or `~/code/hiring` (and subdirs) → uses `~/.claude-work` (business account)
 - everywhere else → uses `~/.claude` (personal account)
 
-Each config dir holds its own auth, session history, projects, memory, todos, and usage clock. Shared bits (`skills/`, `settings.json`, `commands/`, `hooks/`, `plugins/`, `CLAUDE.md`) are symlinked from `~/.claude-work` back to `~/.claude` so changes apply to both accounts.
+Each config dir holds its own auth, session history, projects, memory, todos, usage clock, and plugin registry. Shared bits (`skills/`, `settings.json`, `commands/`, `hooks/`, `CLAUDE.md`) are symlinked from `~/.claude-work` back to `~/.claude` so changes apply to both accounts.
+
+Do not symlink `plugins/` between config dirs. Claude Code stores absolute marketplace and plugin install paths under the active `CLAUDE_CONFIG_DIR`, so a shared plugin registry will look corrupted from the other account.
 
 ### One-time setup on a new machine
 
 ```bash
 mkdir -p ~/.claude-work
 cd ~/.claude-work
-for x in skills settings.json commands hooks plugins CLAUDE.md; do
+for x in skills settings.json commands hooks CLAUDE.md; do
   ln -s ~/.claude/$x $x
 done
 cd ~/code/drplt && claude   # log in with the business account
 ```
+
+Install plugins separately per account with `claude-personal ...` or `claude-work ...`.
 
 ### Commands
 
