@@ -87,15 +87,21 @@ export EDITOR='nvim'
 # plugins, and themes. Aliases can be placed here, though oh-my-zsh
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
 # For a full list of active aliases, run `alias`.
-alias gitclean='git branch --merged | grep -v "\*" | grep -v master | grep -v dev | grep -v yours-master | xargs -n 1 git branch -d'
-alias gpu='git push -u origin head'
-alias gpun='git push --no-verify -u origin head'
-alias gpf='git push -f origin head'
-alias gpfn='git push --no-verify -f origin head'
+# Load the dry-run-first branch housekeeper from this dotfiles checkout.
+gitclean_script="${${(%):-%N}:A:h}/gitclean.zsh"
+if [ -f "$gitclean_script" ]; then
+  source "$gitclean_script"
+fi
+unset gitclean_script
+alias gpu='git push -u origin HEAD'
+alias gpun='git push --no-verify -u origin HEAD'
+alias gpf='git push --force-with-lease origin HEAD'
+alias gpfn='git push --no-verify --force-with-lease origin HEAD'
 alias gca='git commit --amend --no-edit'
+alias gcn='git commit --no-verify'
 alias gcan='git commit --no-verify --amend --no-edit'
 # show the diff that will appear in a PR
-alias gdpr='git fetch origin && git diff origin/main...HEAD'
+alias gdpr='git diff origin/main...HEAD'
 # https://piechowski.io/post/git-commands-before-reading-code/
 alias gchg='git log --format=format: --name-only --since="1 year ago" | sort | uniq -c | grep -vE "pnpm-lock.yaml|package.json" | sort -nr | head -20'
 alias gwho='git shortlog -sn --no-merges'
@@ -150,9 +156,6 @@ load-nvmrc
 # larger open files limit, its 2026
 ulimit -n 8192
 
-# opam configuration
-[[ ! -r $HOME/.opam/opam-init/init.zsh ]] || source $HOME/.opam/opam-init/init.zsh  > /dev/null 2> /dev/null
-
 # load .env files
 eval "$(direnv hook zsh)"
 
@@ -196,4 +199,3 @@ unset claude_account_script
 if [ -f ~/.zshrc.local ]; then
   source ~/.zshrc.local
 fi
-

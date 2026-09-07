@@ -40,6 +40,8 @@ _claude_config_for_pwd() {
     "$HOME/code/drplt"|"$HOME/code/drplt"/*) echo "$HOME/.claude-work" ;;
     "$HOME/code/drplt-worktrees"|"$HOME/code/drplt-worktrees"/*) echo "$HOME/.claude-work" ;;
     "$HOME/code/hiring"|"$HOME/code/hiring"/*) echo "$HOME/.claude-work" ;;
+    "$HOME/code/ai-spend"|"$HOME/code/ai-spend"/*) echo "$HOME/.claude-work" ;;
+    "$HOME/code/cascade"|"$HOME/code/cascade"/*) echo "$HOME/.claude-work" ;;
     *) echo "$HOME/.claude" ;;
   esac
 }

@@ -41,7 +41,13 @@
 	ff = only
 [push]
 	autoSetupRemote = true
+	default = current
 [credential "https://github.com"]
 	helper = !/opt/homebrew/bin/gh auth git-credential
 [credential "https://gist.github.com"]
 	helper = !/opt/homebrew/bin/gh auth git-credential
+[rebase]
+	updateRefs = true
+	autosquash = true
+[rerere]
+	enabled = true
