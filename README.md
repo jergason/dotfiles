@@ -6,6 +6,18 @@ Mostly optimized for macos.
 
 To run, execute `install.sh`.
 
+## Shared AI configuration
+
+Run `bash ai/install.sh` to install the AI configuration links independently, or select the AI step in `install.sh`.
+Existing files are backed up beside their original paths. Repeating the command leaves correct links in place.
+
+- `skills/.skill-lock.json` tracks the global skills inventory. The installer links it from `~/.agents/.skill-lock.json`, or `$XDG_STATE_HOME/skills/.skill-lock.json` when that variable is set.
+- `ai/AGENTS.md` contains the shared global instructions. `~/.claude/CLAUDE.md` points to it. `~/.agents/AGENTS.md` and `~/.codex/AGENTS.md` retain their links through that file.
+
+Skill updates modify the tracked lockfile through the symlink. Review and commit those changes when you update skills.
+The lockfile contains metadata, not skill contents. This installer does not download skills on a new machine.
+The repository's root `CLAUDE.md` contains instructions specific to this repository.
+
 ## Claude Code multi-account setup
 
 `claude_account.zsh` wraps the `claude` CLI so it auto-picks a config dir based on `$PWD`:

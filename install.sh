@@ -68,6 +68,11 @@ if get_confirmation "install dotfiles"; then
 fi
 
 
+if get_confirmation "install AI instructions and skill lockfile"; then
+  bash "${SCRIPT_DIR}/ai/install.sh"
+fi
+
+
 if get_confirmation "install scripts (tmux-notify, etc)"; then
   mkdir -p ~/bin
   backup_dotfile_if_exists ~/bin/tmux-notify
