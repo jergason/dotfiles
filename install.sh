@@ -68,7 +68,7 @@ if get_confirmation "install dotfiles"; then
 fi
 
 
-if get_confirmation "install AI instructions and skill lockfile"; then
+if get_confirmation "install AI instructions, skill lockfile, and Codex account links"; then
   bash "${SCRIPT_DIR}/ai/install.sh"
 fi
 

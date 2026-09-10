@@ -25,3 +25,5 @@ link_file "${AI_DIR}/../skills/.skill-lock.json" "$LOCK_PATH"
 link_file "${AI_DIR}/AGENTS.md" "${HOME}/.claude/CLAUDE.md"
 link_file "${HOME}/.claude/CLAUDE.md" "${HOME}/.agents/AGENTS.md"
 link_file "${HOME}/.agents/AGENTS.md" "${HOME}/.codex/AGENTS.md"
+
+bash "${AI_DIR}/install-codex-accounts.sh"

@@ -1,29 +1,21 @@
 # Dotfiles
 
-Let's get a new compy set up!
-
-Mostly optimized for macos.
-
-To run, execute `install.sh`.
+Let's get a new compy set up! To run, execute `install.sh`.
 
 ## Shared AI configuration
 
-Run `bash ai/install.sh` to install the AI configuration links independently, or select the AI step in `install.sh`.
-Existing files are backed up beside their original paths. Repeating the command leaves correct links in place.
+Run `bash ai/install.sh` to install the AI configuration links independently, or select the AI step in `install.sh`. This also runs `ai/install-codex-accounts.sh`. The AI installer backs up existing instruction and lockfile paths; the Codex account installer stops if a shared link would replace an existing file.
 
-- `skills/.skill-lock.json` tracks the global skills inventory. The installer links it from `~/.agents/.skill-lock.json`, or `$XDG_STATE_HOME/skills/.skill-lock.json` when that variable is set.
+- `skills/.skill-lock.json` tracks the agent skills. The installer links it from `~/.agents/.skill-lock.json`, or `$XDG_STATE_HOME/skills/.skill-lock.json` when that variable is set.
 - `ai/AGENTS.md` contains the shared global instructions. `~/.claude/CLAUDE.md` points to it. `~/.agents/AGENTS.md` and `~/.codex/AGENTS.md` retain their links through that file.
 
 Skill updates modify the tracked lockfile through the symlink. Review and commit those changes when you update skills.
-The lockfile contains metadata, not skill contents. This installer does not download skills on a new machine.
-The repository's root `CLAUDE.md` contains instructions specific to this repository.
 
-## Claude Code multi-account setup
+## Claude Code and Codex multi-account setup
 
-`claude_account.zsh` wraps the `claude` CLI so it auto-picks a config dir based on `$PWD`:
+`ai/claude_account.zsh` and `ai/codex_account.zsh` wrap their CLIs to select an account directory based on `$PWD`.
 
-- inside `~/code/drplt` or `~/code/hiring` (and subdirs) → uses `~/.claude-work` (business account)
-- everywhere else → uses `~/.claude` (personal account)
+Work-related directories, as listed in `ai/ai_account.zsh`, go to the business account. Others go to the personal account.
 
 Each config dir holds its own auth, session history, projects, memory, todos, usage clock, and plugin registry. Shared bits (`skills/`, `settings.json`, `commands/`, `hooks/`, `CLAUDE.md`) are symlinked from `~/.claude-work` back to `~/.claude` so changes apply to both accounts.
 
@@ -42,15 +34,23 @@ cd ~/code/drplt && claude   # log in with the business account
 
 Install plugins separately per account with `claude-personal ...` or `claude-work ...`.
 
-### Commands
+## Codex multi-account setup
 
-- `claude` — directory-aware, picks the right account automatically
-- `claude-work` — force the business account regardless of cwd
-- `claude-personal` — force the personal account regardless of cwd
-- `claude-whoami` — print which account the current dir resolves to
+`ai/codex_account.zsh` selects `~/.codex-work` for business projects and `~/.codex` elsewhere.
 
-### How it works
+Run the setup, then sign in once with your business seat:
 
-`CLAUDE_CONFIG_DIR` env var redirects everything Claude Code stores (including `.claude.json`) into the named directory. The shell function sets that var before invoking `command claude`, so each launch lands in the right config dir without polluting the other account's state.
+```bash
+bash ~/code/dotfiles/ai/install.sh
+source ~/code/dotfiles/ai/codex_account.zsh
+codex-work login
+codex-work login status
+```
 
-## TO DO
+Choose the business workspace during sign-in. Your existing `~/.codex` login remains personal. Use `codex-personal login` if you need to sign in again with your personal seat.
+
+- `codex` selects the account for the project.
+- `codex-work` and `codex-personal` select an account regardless of directory.
+- `codex-whoami` prints the selected account directory and checks its login status.
+
+The installer links `skills/`, `config.toml`, `AGENTS.md`, `rules/`, and `hooks.json` from the business directory to `~/.codex`. User skills in `~/.agents/skills` are also shared automatically. Install plugins separately in each account directory if you need their bundled skills in both. Authentication, session history, and plugin state remain separate. The wrapper selects file-based credentials and ChatGPT login so each directory has its own subscription login. Settings and hooks that contain absolute paths keep those paths when shared. Store account-specific overrides in separate profile files within each Codex home.

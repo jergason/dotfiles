@@ -35,14 +35,12 @@ fix-evo-hook() {
   return 0
 }
 
+source "${${(%):-%N}:A:h}/ai_account.zsh"
+
 _claude_config_for_pwd() {
-  case "$PWD" in
-    "$HOME/code/drplt"|"$HOME/code/drplt"/*) echo "$HOME/.claude-work" ;;
-    "$HOME/code/drplt-worktrees"|"$HOME/code/drplt-worktrees"/*) echo "$HOME/.claude-work" ;;
-    "$HOME/code/hiring"|"$HOME/code/hiring"/*) echo "$HOME/.claude-work" ;;
-    "$HOME/code/ai-spend"|"$HOME/code/ai-spend"/*) echo "$HOME/.claude-work" ;;
-    "$HOME/code/cascade"|"$HOME/code/cascade"/*) echo "$HOME/.claude-work" ;;
-    *) echo "$HOME/.claude" ;;
+  case "$(_ai_account_for_dir "$PWD")" in
+    work) echo "$HOME/.claude-work" ;;
+    personal) echo "$HOME/.claude" ;;
   esac
 }
 
@@ -65,7 +63,7 @@ alias claude-personal="CLAUDE_CONFIG_DIR=$HOME/.claude command claude"
 claude-whoami() {
   local d="$(_claude_config_for_pwd)"
   case "$d" in
-    *-work) echo "account: WORK (drplt/hiring)" ;;
+    *-work) echo "account: WORK (Droplet)" ;;
     *)      echo "account: personal" ;;
   esac
   echo "config dir: $d"
