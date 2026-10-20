@@ -1,0 +1,12 @@
+{
+  "light": [
+    "Monokai Pro Light",
+    "Catppuccin Latte",
+    "Rose Pine Dawn"
+  ],
+  "dark": [
+    "GitHub Dark High Contrast",
+    "Catppuccin Mocha",
+    "Rose Pine"
+  ]
+}

@@ -1,0 +1,147 @@
+#!/usr/bin/env python3
+"""Browse Ghostty themes and switch between favorites in this checkout."""
+
+import argparse
+import json
+import os
+import random
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parent.parent
+MODES = ("light", "dark")
+
+
+def ghostty():
+    executable = shutil.which("ghostty")
+    if executable:
+        return executable
+    mac_binary = Path("/Applications/Ghostty.app/Contents/MacOS/ghostty")
+    if mac_binary.is_file():
+        return str(mac_binary)
+    raise ValueError("Ghostty was not found. Install it or add it to PATH.")
+
+
+def installed_themes():
+    result = subprocess.run(
+        [ghostty(), "+list-themes", "--plain"],
+        check=True, capture_output=True, text=True,
+    )
+    return {re.sub(r" \((?:resources|user)\)$", "", line)
+            for line in result.stdout.splitlines()}
+
+
+def write_file(path, content):
+    # Resolve links before replacement so the dotfiles links stay intact.
+    target = path.resolve()
+    with tempfile.NamedTemporaryFile(mode="w", dir=target.parent, delete=False) as file:
+        temporary = Path(file.name)
+        try:
+            file.write(content)
+            file.flush()
+            temporary.chmod(target.stat().st_mode & 0o777)
+            temporary.replace(target)
+        finally:
+            temporary.unlink(missing_ok=True)
+
+
+def read_favorites(path):
+    favorites = json.loads(path.read_text())
+    if not isinstance(favorites, dict) or set(favorites) != set(MODES):
+        raise ValueError("Favorites must contain light and dark lists.")
+    for mode in MODES:
+        names = favorites[mode]
+        if (not isinstance(names, list) or not names
+                or any(not isinstance(name, str) or not name.strip()
+                       or any(char in name for char in "\n\r,\"") for name in names)):
+            raise ValueError(f"The {mode} favorites must be a nonempty list of theme names.")
+        if len(names) != len(set(names)):
+            raise ValueError(f"The {mode} favorites contain duplicate names.")
+    return favorites
+
+
+def select_theme(names, current, action):
+    if action == "random":
+        return random.choice([name for name in names if name != current] or names)
+    if current not in names:
+        return names[0]
+    step = -1 if action == "previous" else 1
+    return names[(names.index(current) + step) % len(names)]
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    commands = parser.add_subparsers(dest="action")
+    for action in ("browse", "list", "random", "next", "previous"):
+        command = commands.add_parser(action)
+        command.add_argument("mode", nargs="?", choices=(*MODES, "both"), default="both")
+    for action in ("add", "remove"):
+        command = commands.add_parser(action)
+        command.add_argument("mode", choices=MODES)
+        command.add_argument("name", help="Exact theme name, in quotes")
+    args = parser.parse_args()
+    action = args.action or "browse"
+    mode = getattr(args, "mode", "both")
+    if action == "browse":
+        # Hand control to the browser without keeping a waiting Python process.
+        os.execl(ghostty(), "ghostty", "+list-themes", f"--color={'all' if mode == 'both' else mode}")
+
+    favorites_path = ROOT / "ghostty-favorites.json"
+    favorites = read_favorites(favorites_path)
+    modes = MODES if mode == "both" else (mode,)
+    if action == "list":
+        for selected_mode in modes:
+            print(f"{selected_mode}:\n" + "\n".join(f"  {name}" for name in favorites[selected_mode]))
+        return 0
+    if action in ("add", "remove"):
+        names = favorites[mode]
+        if action == "add":
+            if args.name not in installed_themes() or any(char in args.name for char in "\n\r,\""):
+                raise ValueError(f"Unsupported theme: {args.name}")
+            updated = list(dict.fromkeys([*names, args.name]))
+        else:
+            if args.name not in names:
+                raise ValueError(f"Not a {mode} favorite: {args.name}")
+            updated = [name for name in names if name != args.name]
+            if not updated:
+                raise ValueError("Keep at least one favorite per mode.")
+        write_file(favorites_path, json.dumps({**favorites, mode: updated}, indent=2) + "\n")
+        print(f"{mode} favorites: {', '.join(updated)}")
+        return 0
+
+    config_path = ROOT / "ghostty-config"
+    config = config_path.read_text()
+    matches = list(re.finditer(r"^theme\s*=\s*([^\n]+)$", config, re.MULTILINE))
+    if len(matches) != 1:
+        raise ValueError("Expected exactly one theme setting in ghostty-config.")
+    setting = matches[0]
+    pairs = [part.strip().partition(":") for part in setting[1].split(",")]
+    if len(pairs) != 2 or {pair[0] for pair in pairs} != set(MODES) or any(not pair[2].strip() for pair in pairs):
+        raise ValueError("Expected theme = light:NAME,dark:NAME in ghostty-config.")
+    current = {key: value.strip() for key, _, value in pairs}
+    installed = installed_themes()
+    available = {selected_mode: [name for name in favorites[selected_mode] if name in installed]
+                 for selected_mode in modes}
+    for selected_mode, names in available.items():
+        if not names:
+            raise ValueError(f"No installed {selected_mode} favorites. Add one with themes add.")
+    selected = {selected_mode: select_theme(names, current[selected_mode], action)
+                for selected_mode, names in available.items()}
+    updated = {**current, **selected}
+    line = "theme = " + ",".join(f"{key}:{updated[key]}" for key in MODES)
+    write_file(config_path, config[:setting.start()] + line + config[setting.end():])
+    print(line)
+    print("Reload Ghostty with Ctrl+A, then R.")
+    return 0
+
+
+if __name__ == "__main__":
+    try:
+        sys.exit(main())
+    except (OSError, ValueError, subprocess.CalledProcessError) as error:
+        sys.exit(f"themes: {error}")
