@@ -50,6 +50,14 @@ keybind = ctrl+a>comma=prompt_tab_title
 # send literal ctrl-a through (tmux: prefix C-a)
 keybind = ctrl+a>ctrl+a=text:\x01
 
+# Use `themes` to browse, `themes random` to shuffle favorites, then ctrl+a r.
+# theme = light:Monokai Pro Light,dark:Apple Classic
+theme = light:Terminal Basic,dark:Apple Classic
+# use nightly, since releases are kinda slow and themes have bugs
+auto-update-channel = tip
+
+# split dividers are impossible to see on dark mode
+split-divider-color = #6893d9
 
 
 # shaders come from https://github.com/hackr-sh/ghostty-shaders

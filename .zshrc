@@ -72,7 +72,7 @@ DISABLE_AUTO_TITLE="true"
 plugins=(
   1password
   docker
-  github
+  gh
   vi-mode
   z
 )
@@ -93,6 +93,7 @@ if [ -f "$gitclean_script" ]; then
   source "$gitclean_script"
 fi
 unset gitclean_script
+source "${${(%):-%N}:A:h}/ghostty-themes.zsh"
 alias gpu='git push -u origin HEAD'
 alias gpun='git push --no-verify -u origin HEAD'
 alias gpf='git push --force-with-lease origin HEAD'

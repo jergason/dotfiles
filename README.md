@@ -2,6 +2,28 @@
 
 Let's get a new compy set up! To run, execute `install.sh`.
 
+## Try Ghostty themes
+
+Open a new shell, or run `source ~/code/dotfiles/ghostty-themes.zsh` in your current shell. The helper requires Python 3 and Ghostty.
+
+```sh
+themes                                  # Open the interactive browser
+themes browse dark                      # Browse dark themes
+themes list                             # Show favorites
+themes random                           # Choose a light and a dark favorite
+themes random dark                      # Change only the dark theme
+themes next                             # Move through both lists in order
+themes previous light                   # Move back through light favorites
+themes add dark "Catppuccin Frappe"      # Save an installed theme as a favorite
+themes remove dark "Catppuccin Frappe"   # Remove a favorite
+```
+
+After a theme change, press `Ctrl+A`, then `R` in Ghostty to reload the config.
+
+Favorites are in `ghostty-favorites.json`, with separate light and dark lists. Edit the file to reorder them. Each list must retain at least one theme. Random selection skips the current theme when another installed favorite is available. Cycling skips favorites that are absent from the installed Ghostty version.
+
+The helper updates the `theme` line in this checkout's `ghostty-config`. The dotfiles installer links that file to `~/.config/ghostty/config`. Theme choices and favorites appear in your Git diff. Commands default to both modes, while `light` or `dark` changes only that mode. macOS still controls which mode Ghostty displays.
+
 ## Shared AI configuration
 
 Run `bash ai/install.sh` to install the AI configuration links independently, or select the AI step in `install.sh`. This also runs `ai/install-codex-accounts.sh`. The AI installer backs up existing instruction and lockfile paths; the Codex account installer stops if a shared link would replace an existing file.

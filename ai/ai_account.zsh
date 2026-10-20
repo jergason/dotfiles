@@ -6,7 +6,7 @@ _ai_account_for_dir() {
     "$code_dir/drplt-worktrees"|"$code_dir/drplt-worktrees"/*|\
     "$code_dir/hiring"|"$code_dir/hiring"/*|\
     "$code_dir/ai-spend"|"$code_dir/ai-spend"/*|\
-    "$code_dir/cascade"|"$code_dir/cascade"/*) print -r -- work ;;
+    "$code_dir/Cascade"|"$code_dir/Cascade"/*) print -r -- work ;;
     *) print -r -- personal ;;
   esac
 }
