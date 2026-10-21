@@ -2,7 +2,7 @@
 
 Let's get a new compy set up! To run, execute `install.sh`.
 
-The installer skips tools and Nerd Fonts that are already installed. It reuses existing source checkouts and leaves correct configuration links in place. Homebrew package installation remains a separate option.
+The installer skips completed steps without prompting, including tools, Nerd Fonts, dotfile and plugin links, Homebrew packages, and AI configuration. It reuses existing source checkouts and leaves correct configuration links in place. Incomplete steps still prompt, and the Homebrew package step installs only missing packages.
 
 Oh My Zsh setup runs before the dotfile links and preserves an existing `.zshrc`. Claude Code, Codex, and the Pi coding agent each have an optional install step, followed by shared AI configuration. These steps use the official [Oh My Zsh installer](https://github.com/ohmyzsh/ohmyzsh/blob/master/tools/install.sh), [Claude Code installer](https://code.claude.com/docs/en/setup), [Codex installer](https://learn.chatgpt.com/docs/codex/cli), and [Pi installer](https://pi.dev/docs/latest/quickstart).
 
@@ -31,6 +31,8 @@ The helper updates the `theme` line in this checkout's `ghostty-config`. The dot
 ## Shared AI configuration
 
 Run `bash ai/install.sh` to install the Claude and Codex configuration links independently, or select the AI step in `install.sh`. This also runs `ai/install-codex-accounts.sh`. The installer repairs copied symlinks and backs up each replaced file, directory, or link beside its original path. Running it again leaves correct links in place. It also loads the account wrappers from `~/.zshrc` when they are absent.
+
+Run `bash ai/install.sh --check` to check AI setup without changing files. It exits with status 0 when setup is complete and status 1 when work remains.
 
 - `skills/.skill-lock.json` tracks the agent skills. The installer links it from `~/.agents/.skill-lock.json`, or `$XDG_STATE_HOME/skills/.skill-lock.json` when that variable is set.
 - `ai/AGENTS.md` contains the shared global instructions. `~/.claude/CLAUDE.md` points to it. `~/.agents/AGENTS.md` and `~/.codex/AGENTS.md` retain their links through that file.

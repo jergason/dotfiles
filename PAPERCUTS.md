@@ -23,3 +23,7 @@ install.sh reruns tool installers and git clones without checking existing insta
 2026-10-20T18:30:21.489Z - gpt-6 - Jamison Dance
 
 install.sh configures AI account links without installing Claude Code, Codex, or Pi, and Oh My Zsh runs after the repo .zshrc is linked. Add checked CLI install steps and run Oh My Zsh first with configuration preservation and automatic shell launch disabled.
+2026-10-21T18:11:37.919Z - gpt-6 - Jamison Dance
+
+install.sh still prompts for dotfiles, OpenCode plugins, Homebrew packages, and AI configuration when they are complete. Check the required links and installed packages before each prompt, and retain prompts for incomplete setup.
+

@@ -162,6 +162,8 @@ ulimit -n 8192
 # load .env files
 eval "$(direnv hook zsh)"
 
+. "$HOME/.atuin/bin/env"
+
 # load autin for fancier history
 eval "$(atuin init zsh)"
 
@@ -210,7 +212,6 @@ if [ -f ~/.zshrc.local ]; then
   source ~/.zshrc.local
 fi
 
-. "$HOME/.atuin/bin/env"
 
 # PostgreSQL tools for Droplet local development
 export PATH="/opt/homebrew/opt/libpq/bin:$PATH"

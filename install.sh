@@ -29,6 +29,24 @@ link_dotfile() {
   ln -s "$source" "$target"
 }
 
+dotfile_linked() {
+  [ -L "$2" ] && [ "$(readlink "$2")" = "$1" ]
+}
+
+dotfiles_installed() {
+  dotfile_linked "${SCRIPT_DIR}/.zshrc" "$HOME/.zshrc" &&
+    dotfile_linked "${SCRIPT_DIR}/.gitconfig" "$HOME/.gitconfig" &&
+    dotfile_linked "${SCRIPT_DIR}/ghostty-config" "$HOME/.config/ghostty/config"
+}
+
+opencode_plugins_installed() {
+  local plugin_path
+  for plugin_path in "${SCRIPT_DIR}"/opencode/plugins/*; do
+    [ -f "$plugin_path" ] || continue
+    dotfile_linked "$plugin_path" "$HOME/.config/opencode/plugins/$(basename "$plugin_path")" || return 1
+  done
+}
+
 clone_if_missing() {
   local repo=$1 target=$2
   shift 2
@@ -85,14 +103,18 @@ elif get_confirmation "get ghostty shaders"; then
 fi
 
 
-if get_confirmation "install dotfiles"; then
+if dotfiles_installed; then
+  echo "Dotfiles are already installed."
+elif get_confirmation "install dotfiles"; then
   link_dotfile "${SCRIPT_DIR}/.zshrc" "$HOME/.zshrc"
   link_dotfile "${SCRIPT_DIR}/.gitconfig" "$HOME/.gitconfig"
   link_dotfile "${SCRIPT_DIR}/ghostty-config" "$HOME/.config/ghostty/config"
 fi
 
 
-if get_confirmation "install OpenCode plugins"; then
+if opencode_plugins_installed; then
+  echo "OpenCode plugins are already installed."
+elif get_confirmation "install OpenCode plugins"; then
   for plugin_path in "${SCRIPT_DIR}"/opencode/plugins/*; do
     [ -f "$plugin_path" ] || continue
     plugin_name=$(basename "$plugin_path")
@@ -108,8 +130,20 @@ elif get_confirmation "install homebrew"; then
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 
-if command -v brew >/dev/null 2>&1 && get_confirmation "install homebrew packages"; then
-  xargs brew install < "${SCRIPT_DIR}/homebrew-packages.txt"
+if command -v brew >/dev/null 2>&1; then
+  installed_packages=$(brew list --formula -1)
+  missing_packages=()
+  while IFS= read -r package || [ -n "$package" ]; do
+    [ -n "$package" ] || continue
+    if ! grep -Fxq -- "$package" <<< "$installed_packages"; then
+      missing_packages+=("$package")
+    fi
+  done < "${SCRIPT_DIR}/homebrew-packages.txt"
+  if [ "${#missing_packages[@]}" -eq 0 ]; then
+    echo "Homebrew packages are already installed."
+  elif get_confirmation "install homebrew packages"; then
+    brew install "${missing_packages[@]}"
+  fi
 fi
 
 # remember to set up java
@@ -181,7 +215,9 @@ elif get_confirmation "install Pi"; then
   )
 fi
 
-if get_confirmation "install AI instructions, skill lockfile, and Codex account links"; then
+if bash "${SCRIPT_DIR}/ai/install.sh" --check; then
+  echo "AI configuration is already installed."
+elif get_confirmation "install AI instructions, skill lockfile, and Codex account links"; then
   bash "${SCRIPT_DIR}/ai/install.sh"
 fi
 

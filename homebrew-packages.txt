@@ -20,4 +20,5 @@ ninja
 ripgrep
 shellcheck
 tree
+tree-sitter-cli
 wget
