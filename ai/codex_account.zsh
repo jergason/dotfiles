@@ -27,8 +27,26 @@ _codex_account_home() {
   esac
 }
 
+_codex_uses_runtime_config() {
+  while (( $# )); do
+    case "$1" in
+      --) return 0 ;;
+      -c|--config|-C|--cd|-m|--model|-i|--image|-s|--sandbox|-a|--ask-for-approval|--add-dir|--enable|--disable|--remote|--remote-auth-token-env)
+        (( $# > 1 )) || return 0
+        shift 2 ;;
+      -*) shift ;;
+      login|logout|doctor|features|agents|plugin|app|app-server|remote-control|completion|update|exec-server|apply|migrate-rollouts|cloud|help)
+        return 1 ;;
+      debug) [[ "$2" == prompt-input ]]; return ;;
+      *) return 0 ;;
+    esac
+  done
+  return 0
+}
+
 _codex_run_account() {
-  local account="$1" dir
+  local account="$1" dir arg
+  local -a profile_args
   shift
   dir="$(_codex_account_home "$account")" || return
   if [[ ! -d "$dir" ]]; then
@@ -36,8 +54,19 @@ _codex_run_account() {
     return 1
   fi
   print -ru2 -- "codex: account=$account home=$dir (selected login store)"
+  # CLI settings are a named layer; Codex does not load cli.config.toml by default.
+  profile_args=()
+  if [[ -f "$dir/cli.config.toml" ]] && _codex_uses_runtime_config "$@"; then
+    profile_args=(--profile cli)
+  fi
+  for arg in "$@"; do
+    case "$arg" in
+      --) break ;;
+      -p|--profile|--profile=*|-p?*) profile_args=(); break ;;
+    esac
+  done
   # File storage keeps each login in its own home. Require subscription login.
-  CODEX_HOME="$dir" command codex \
+  CODEX_HOME="$dir" command codex "${profile_args[@]}" \
     -c 'cli_auth_credentials_store="file"' -c 'forced_login_method="chatgpt"' "$@"
 }
 

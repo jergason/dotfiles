@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -eo pipefail
 
 # use with get_confirmation "install rust" etc
 get_confirmation() {
@@ -14,10 +14,44 @@ get_confirmation() {
   fi
 }
 
-function backup_dotfile_if_exists() {
-  if [ -e "$1" ]; then
-    mv "$1" "${1}.bak"
+link_dotfile() {
+  local source=$1 target=$2 backup
+  if [ -L "$target" ] && [ "$(readlink "$target")" = "$source" ]; then
+    echo "$target is already linked."
+    return
   fi
+  mkdir -p "$(dirname "$target")"
+  if [ -e "$target" ] || [ -L "$target" ]; then
+    backup=$(mktemp -d "${target}.bak.XXXXXX")
+    mv "$target" "$backup/$(basename "$target")"
+    echo "Backed up $target to $backup"
+  fi
+  ln -s "$source" "$target"
+}
+
+clone_if_missing() {
+  local repo=$1 target=$2
+  shift 2
+  if [ -e "$target" ] || [ -L "$target" ]; then
+    echo "$target already exists. Skipping clone."
+  else
+    mkdir -p "$(dirname "$target")"
+    git clone "$@" "$repo" "$target"
+  fi
+}
+
+nerd_fonts_installed() {
+  local font_dir font_file
+  for font_dir in "$HOME/Library/Fonts" /Library/Fonts \
+    "${XDG_DATA_HOME:-$HOME/.local/share}/fonts" "$HOME/.fonts" \
+    /usr/local/share/fonts /usr/share/fonts; do
+    [ -d "$font_dir" ] || continue
+    font_file=$(find "$font_dir" -type f \( -iname '*nerd*.ttf' -o -iname '*nerd*.otf' \) -print -quit)
+    if [ -n "$font_file" ]; then
+      return 0
+    fi
+  done
+  return 1
 }
 
 echo ""
@@ -32,118 +66,143 @@ echo ""
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 CODE_DIR=~/code
 mkdir -p "$CODE_DIR"
+# Also detect installs that this non-interactive shell has not added to PATH.
+export PATH="$PATH:$HOME/neovim/bin:${CARGO_HOME:-$HOME/.cargo}/bin:$HOME/.local/bin:$HOME/bin:/opt/homebrew/bin:/usr/local/bin:/home/linuxbrew/.linuxbrew/bin"
 
-if get_confirmation "get ghostty shaders"; then
-  git clone git@github.com:hackr-sh/ghostty-shaders.git ~/.config/ghostty/shaders
-  git clone git@github.com:KroneCorylus/ghostty-shader-playground.git ~/.config/ghostty/ghostty-shader-playground
+ZSH_DIR="${ZSH:-$HOME/.oh-my-zsh}"
+if [ -s "$ZSH_DIR/oh-my-zsh.sh" ]; then
+  echo "Oh My Zsh is already installed."
+elif get_confirmation "install Oh My Zsh"; then
+  curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh \
+    | ZSH="$ZSH_DIR" KEEP_ZSHRC=yes RUNZSH=no CHSH=no sh
+fi
+
+if [ -d "$HOME/.config/ghostty/shaders" ] && [ -d "$HOME/.config/ghostty/ghostty-shader-playground" ]; then
+  echo "Ghostty shaders are already installed."
+elif get_confirmation "get ghostty shaders"; then
+  clone_if_missing git@github.com:hackr-sh/ghostty-shaders.git "$HOME/.config/ghostty/shaders"
+  clone_if_missing git@github.com:KroneCorylus/ghostty-shader-playground.git "$HOME/.config/ghostty/ghostty-shader-playground"
 fi
 
 
 if get_confirmation "install dotfiles"; then
-  # symlink .zshrc and .git_config
-  backup_dotfile_if_exists ~/.zshrc
-  ln -s "${SCRIPT_DIR}/.zshrc" ~/.zshrc
-  backup_dotfile_if_exists ~/.gitconfig
-  ln -s "${SCRIPT_DIR}/.gitconfig" ~/.gitconfig
-
-  mkdir -p ~/.config/ghostty
-  backup_dotfile_if_exists ~/.config/ghostty/config
-  ln -s "${SCRIPT_DIR}/ghostty-config" ~/.config/ghostty/config
-
-  backup_dotfile_if_exists ~/.tmux.conf
-  ln -s "${SCRIPT_DIR}/tmux.conf" ~/.tmux.conf
-
-  # install/update tmux plugin manager (tpm)
-  TPM_DIR="$HOME/.tmux/plugins/tpm"
-  mkdir -p "$HOME/.tmux/plugins"
-  if [ -d "$TPM_DIR/.git" ]; then
-    git -C "$TPM_DIR" pull --ff-only
-  elif [ -e "$TPM_DIR" ]; then
-    echo "Skipping TPM install: $TPM_DIR exists and is not a git repo."
-  else
-    git clone https://github.com/tmux-plugins/tpm "$TPM_DIR"
-  fi
-
-  echo "TPM ready. In tmux, run prefix + I to install plugins."
+  link_dotfile "${SCRIPT_DIR}/.zshrc" "$HOME/.zshrc"
+  link_dotfile "${SCRIPT_DIR}/.gitconfig" "$HOME/.gitconfig"
+  link_dotfile "${SCRIPT_DIR}/ghostty-config" "$HOME/.config/ghostty/config"
 fi
 
 
-if get_confirmation "install AI instructions, skill lockfile, and Codex account links"; then
-  bash "${SCRIPT_DIR}/ai/install.sh"
-fi
-
-
-if get_confirmation "install scripts (tmux-notify, etc)"; then
-  mkdir -p ~/bin
-  backup_dotfile_if_exists ~/bin/tmux-notify
-  ln -s "${SCRIPT_DIR}/bin/tmux-notify" ~/bin/tmux-notify
-  chmod +x "${SCRIPT_DIR}/bin/tmux-notify"
-
-  backup_dotfile_if_exists ~/bin/tmux-open-under-cursor
-  ln -s "${SCRIPT_DIR}/bin/tmux-open-under-cursor" ~/bin/tmux-open-under-cursor
-  chmod +x "${SCRIPT_DIR}/bin/tmux-open-under-cursor"
-
-  mkdir -p ~/.config/opencode/plugins
+if get_confirmation "install OpenCode plugins"; then
   for plugin_path in "${SCRIPT_DIR}"/opencode/plugins/*; do
     [ -f "$plugin_path" ] || continue
     plugin_name=$(basename "$plugin_path")
     plugin_target="${HOME}/.config/opencode/plugins/${plugin_name}"
-    backup_dotfile_if_exists "$plugin_target"
-    ln -s "$plugin_path" "$plugin_target"
+    link_dotfile "$plugin_path" "$plugin_target"
   done
 fi
 
 
-if get_confirmation "install homebrew"; then
-  # install homebrew
+if command -v brew >/dev/null 2>&1; then
+  echo "Homebrew is already installed."
+elif get_confirmation "install homebrew"; then
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-  if get_confirmation "install homebrew packages"; then
-    xargs brew install < ./homebrew-packages.txt
-  fi
-
-  # remember to set up java
-  # sudo ln -sfn /usr/local/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk
 fi
 
+if command -v brew >/dev/null 2>&1 && get_confirmation "install homebrew packages"; then
+  xargs brew install < "${SCRIPT_DIR}/homebrew-packages.txt"
+fi
 
-if get_confirmation "install neovim"; then
-  NEOVIM_INSTALL_DIR=~/neovim
+# remember to set up java
+# sudo ln -sfn /usr/local/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk
+
+
+if command -v nvim >/dev/null 2>&1; then
+  echo "Neovim is already installed."
+elif get_confirmation "install neovim"; then
+  NEOVIM_INSTALL_DIR="$HOME/neovim"
   mkdir -p "$NEOVIM_INSTALL_DIR"
 
-  cd "$CODE_DIR"
-  git clone git@github.com:neovim/neovim.git
-  git clone git@github.com:jergason/nvim-config.git
-  cd neovim
-  git checkout main && git pull && git checkout stable
-  make CMAKE_BUILD_TYPE=RelWithDebInfo CMAKE_EXTRA_FLAGS="-DCMAKE_INSTALL_PREFIX=${NEOVIM_INSTALL_DIR}" && make install
+  clone_if_missing git@github.com:neovim/neovim.git "$CODE_DIR/neovim"
+  (
+    cd "$CODE_DIR/neovim"
+    git checkout main
+    git pull --ff-only
+    git checkout stable
+    make CMAKE_BUILD_TYPE=RelWithDebInfo CMAKE_EXTRA_FLAGS="-DCMAKE_INSTALL_PREFIX=${NEOVIM_INSTALL_DIR}"
+    make install
+  )
 fi
 
-if get_confirmation "install nvm"; then
-  cd ~
+if [ -d "$CODE_DIR/nvim-config" ]; then
+  echo "Neovim configuration is already checked out."
+elif get_confirmation "get neovim configuration"; then
+  clone_if_missing git@github.com:jergason/nvim-config.git "$CODE_DIR/nvim-config"
+fi
+
+if [ -z "${NVM_DIR:-}" ]; then
+  if [ -n "${XDG_CONFIG_HOME:-}" ]; then
+    NVM_DIR="$XDG_CONFIG_HOME/nvm"
+  else
+    NVM_DIR="$HOME/.nvm"
+  fi
+fi
+export NVM_DIR
+if [ -s "$NVM_DIR/nvm.sh" ]; then
+  echo "nvm is already installed."
+elif get_confirmation "install nvm"; then
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-  export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
   nvm install --lts
   # allow managing yarn/pnpm/etc versions
   corepack enable
 fi
 
-if get_confirmation "install fonts"; then
-  cd "$CODE_DIR"
-  git clone --depth=1 git@github.com:ryanoasis/nerd-fonts.git && cd nerd-fonts && ./install.sh
+if command -v claude >/dev/null 2>&1; then
+  echo "Claude Code is already installed."
+elif get_confirmation "install Claude Code"; then
+  curl -fsSL https://claude.ai/install.sh | bash
 fi
 
-# we do this first so we don't mess up our dotfiles, which assume ohmyzsh is installed
-if get_confirmation "install ohmyzsh"; then
-  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+if command -v codex >/dev/null 2>&1; then
+  echo "Codex is already installed."
+elif get_confirmation "install Codex"; then
+  curl -fsSL https://chatgpt.com/codex/install.sh | sh
 fi
 
+if command -v pi >/dev/null 2>&1; then
+  echo "Pi is already installed."
+elif get_confirmation "install Pi"; then
+  (
+    # Make an existing nvm-managed Node installation available to Pi's installer.
+    if [ -s "$NVM_DIR/nvm.sh" ]; then
+      . "$NVM_DIR/nvm.sh"
+    fi
+    curl -fsSL https://pi.dev/install.sh | sh
+  )
+fi
 
-if get_confirmation "install rust"; then
+if get_confirmation "install AI instructions, skill lockfile, and Codex account links"; then
+  bash "${SCRIPT_DIR}/ai/install.sh"
+fi
+
+if nerd_fonts_installed; then
+  echo "Nerd Fonts are already installed."
+elif get_confirmation "install fonts"; then
+  clone_if_missing git@github.com:ryanoasis/nerd-fonts.git "$CODE_DIR/nerd-fonts" --depth=1
+  (
+    cd "$CODE_DIR/nerd-fonts"
+    ./install.sh
+  )
+fi
+
+if command -v rustc >/dev/null 2>&1 || command -v rustup >/dev/null 2>&1; then
+  echo "Rust is already installed."
+elif get_confirmation "install rust"; then
   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 fi
 
-if get_confirmation "install autin (shell history fanciness)"; then
+if command -v atuin >/dev/null 2>&1; then
+  echo "Atuin is already installed."
+elif get_confirmation "install atuin (shell history fanciness)"; then
   /bin/bash -c "$(curl --proto '=https' --tlsv1.2 -sSf https://setup.atuin.sh)"
 fi

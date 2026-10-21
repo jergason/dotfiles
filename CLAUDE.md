@@ -11,7 +11,6 @@ personal dotfiles repo for macos. symlinks config files to home directory via `i
 - `.zshrc` - zsh config, uses oh-my-zsh with lambda theme, vi-mode plugin
 - `.gitconfig` - git aliases (co, ci, st, br, lg, grog)
 - `ghostty-config` - terminal config for ghostty, includes optional shader support
-- `tmux.conf` - tmux config, ctrl-a prefix, vi keys, mouse support
 - `alias_reminder.zsh` - preexec hook that suggests aliases when you type full commands
 - `shaders/` - submodule/collection of glsl shaders for ghostty terminal effects
 - `homebrew-packages.txt` - list of brew packages to install
@@ -23,13 +22,12 @@ personal dotfiles repo for macos. symlinks config files to home directory via `i
 ./install.sh
 ```
 
-the script is interactive - it asks before each step (dotfiles, homebrew, neovim, nvm, fonts, ohmyzsh, rust, atuin).
+The script asks before each setup step and skips installed tools. Oh My Zsh runs before the dotfile links. Claude Code, Codex, and Pi have separate install steps before shared AI configuration.
 
 symlinks created:
 - `~/.zshrc` -> this repo's `.zshrc`
 - `~/.gitconfig` -> this repo's `.gitconfig`
 - `~/.config/ghostty/config` -> this repo's `ghostty-config`
-- `~/.tmux.conf` -> this repo's `tmux.conf`
 
 ## Key Aliases
 

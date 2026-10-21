@@ -1,6 +1,4 @@
-amethyst
 ast-grep
-chromedriver
 cloc
 cmake
 coreutils
@@ -14,20 +12,12 @@ gettext
 gh
 gifski
 git
-graphviz
-homebrew/cask/docker
 htop
-jesseduffield/lazydocker/lazydocker
 jpeg
 jq
-keycastr
-lazygit
 luarocks
-menumeters
 ninja
-opam
 ripgrep
 shellcheck
-tmux
 tree
 wget

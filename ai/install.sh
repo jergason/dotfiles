@@ -3,19 +3,16 @@ set -euo pipefail
 
 AI_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 
-link_file() {
-  local source=$1 target=$2 backup
-  if [ -L "$target" ] && [ "$(readlink "$target")" = "$source" ]; then
-    return
-  fi
-  mkdir -p "$(dirname "$target")"
-  if [ -e "$target" ] || [ -L "$target" ]; then
-    backup=$(mktemp "${target}.bak.XXXXXX")
-    mv "$target" "$backup"
-    echo "Backed up $target to $backup"
-  fi
-  ln -s "$source" "$target"
-}
+source "${AI_DIR}/link.sh"
+
+mkdir -p "$HOME/.claude/skills" "$HOME/.claude/commands" "$HOME/.claude/hooks" "$HOME/.claude-work"
+chmod 700 "$HOME/.claude-work"
+if [[ ! -e "$HOME/.claude/settings.json" ]]; then
+  printf '{}\n' > "$HOME/.claude/settings.json"
+fi
+for name in skills settings.json commands hooks CLAUDE.md; do
+  link_file "$HOME/.claude/$name" "$HOME/.claude-work/$name"
+done
 
 LOCK_PATH="${HOME}/.agents/.skill-lock.json"
 if [ -n "${XDG_STATE_HOME:-}" ]; then
@@ -27,3 +24,13 @@ link_file "${HOME}/.claude/CLAUDE.md" "${HOME}/.agents/AGENTS.md"
 link_file "${HOME}/.agents/AGENTS.md" "${HOME}/.codex/AGENTS.md"
 
 bash "${AI_DIR}/install-codex-accounts.sh"
+
+# The full dotfiles .zshrc already loads these. Also support a minimal shell.
+touch "$HOME/.zshrc"
+for name in claude codex; do
+  if ! grep -Fq "ai/${name}_account.zsh" "$HOME/.zshrc"; then
+    printf '\n# Project-specific %s account selection (dotfiles).\nsource %q\n' \
+      "$name" "$AI_DIR/${name}_account.zsh" >> "$HOME/.zshrc"
+  fi
+done
+printf '%s\n' 'AI configuration ready. Open a new terminal or run: source ~/.zshrc'

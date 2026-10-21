@@ -1,5 +1,7 @@
 export PATH=$HOME/neovim/bin:$HOME/bin:/usr/local/bin:/opt/homebrew/bin:$PATH
 
+export PATH="$HOME/.local/bin:$PATH"
+
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
@@ -207,3 +209,8 @@ unset codex_account_script
 if [ -f ~/.zshrc.local ]; then
   source ~/.zshrc.local
 fi
+
+. "$HOME/.atuin/bin/env"
+
+# PostgreSQL tools for Droplet local development
+export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
