@@ -27,3 +27,11 @@ install.sh configures AI account links without installing Claude Code, Codex, or
 
 install.sh still prompts for dotfiles, OpenCode plugins, Homebrew packages, and AI configuration when they are complete. Check the required links and installed packages before each prompt, and retain prompts for incomplete setup.
 
+2026-10-23T23:45:43.966Z - gpt-6.1-sol - Jamison Dance
+
+bin/agent-chrome switches to the testing desktop before every headed launch, which interrupts keyboard focus even when Hammerspoon later returns to the previous workspace. Launch testing Chrome without changing the active workspace, and cover focus preservation in the browser checks.
+
+2026-10-24T00:02:16.202Z - gpt-6.1-sol - Jamison Dance
+
+hammerspoon/agent-browser.lua used the shared window filter to detect new testing windows, which missed a second Chrome process with the same application name. Per-process application watchers now track and place windows from independent agent browsers.
+

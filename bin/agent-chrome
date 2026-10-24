@@ -1,0 +1,18 @@
+#!/bin/bash
+set -euo pipefail
+
+chrome="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+if [[ ! -x "$chrome" ]]; then
+  echo "agent-chrome requires Google Chrome." >&2
+  exit 1
+fi
+
+# Version checks and headless sessions must not switch desktops.
+for argument in "$@"; do
+  case "$argument" in
+    --version|--headless|--headless=*) exec "$chrome" "$@" ;;
+  esac
+done
+
+script_dir="$(cd -- "$(dirname -- "$0")" && pwd)"
+exec node "$script_dir/agent-chrome.mjs" "$@"

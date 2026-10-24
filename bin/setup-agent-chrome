@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+"""Configure Chrome DevTools MCP to use the desktop-aware browser launcher."""
+import json
+import os
+import subprocess
+from pathlib import Path
+
+launcher = Path(__file__).resolve().with_name("agent-chrome")
+source = launcher.parent.parent / "hammerspoon" / "move-window-space.m"
+helper = source.parent / ".build" / "move-window-space"
+helper.parent.mkdir(parents=True, exist_ok=True)
+subprocess.run([
+    "xcrun", "clang", "-fobjc-arc", "-Wall", "-Wextra", "-Werror",
+    "-framework", "Cocoa", str(source), "-o", str(helper),
+], check=True)
+subprocess.run([str(helper), "--check"], check=True)
+config_root = Path(os.environ.get("XDG_CONFIG_HOME", ""))
+if not config_root.is_absolute():
+    config_root = Path.home() / ".config"
+config = config_root / "cd4a" / "config.json"
+settings = json.loads(config.read_text()) if config.exists() else {}
+settings["executablePath"] = str(launcher)
+config.parent.mkdir(parents=True, exist_ok=True)
+config.write_text(json.dumps(settings, indent=2) + "\n")
+print(f"Configured {config}. Reload Hammerspoon and restart Chrome DevTools MCP sessions to apply.")
