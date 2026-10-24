@@ -3,6 +3,9 @@ font-family = "MesloLGM Nerd Font"
 # claude code magic
 keybind = shift+enter=text:\n
 
+# save windows so we can restore them after quitting
+window-save-state = always
+
 # --- bell: let claude-code hooks ring \a, ghostty flashes + dock-bounces ---
 # defaults already include attention,title; adding system for mac notif/dock
 bell-features = system,attention,title

@@ -131,7 +131,7 @@ elif get_confirmation "install homebrew"; then
 fi
 
 if command -v brew >/dev/null 2>&1; then
-  installed_packages=$(brew list --formula -1)
+  installed_packages=$(brew list --formula --full-name -1)
   missing_packages=()
   while IFS= read -r package || [ -n "$package" ]; do
     [ -n "$package" ] || continue
@@ -144,6 +144,35 @@ if command -v brew >/dev/null 2>&1; then
   elif get_confirmation "install homebrew packages"; then
     brew install "${missing_packages[@]}"
   fi
+fi
+
+
+if [ "$(uname -s)" = Darwin ] && command -v brew >/dev/null 2>&1; then
+  installed_casks=$(brew list --cask -1)
+  missing_casks=()
+  while IFS= read -r cask || [ -n "$cask" ]; do
+    [ -n "$cask" ] || continue
+    if ! grep -Fxq -- "$cask" <<< "$installed_casks"; then
+      missing_casks+=("$cask")
+    fi
+  done < "${SCRIPT_DIR}/homebrew-casks.txt"
+  if [ "${#missing_casks[@]}" -eq 0 ]; then
+    echo "Homebrew casks are already installed."
+  elif get_confirmation "install homebrew casks"; then
+    brew install --cask "${missing_casks[@]}"
+  fi
+fi
+
+if [ -d /Applications/Hammerspoon.app ] && dotfile_linked "${SCRIPT_DIR}/hammerspoon/init.lua" "$HOME/.hammerspoon/init.lua"; then
+  echo "Amethyst monitor automation is already installed."
+elif [ "$(uname -s)" = Darwin ] && get_confirmation "set up Hammerspoon for Amethyst monitor changes"; then
+  if [ ! -d /Applications/Hammerspoon.app ]; then
+    brew install --cask hammerspoon
+  fi
+  link_dotfile "${SCRIPT_DIR}/hammerspoon/init.lua" "$HOME/.hammerspoon/init.lua"
+  open -a Hammerspoon
+  echo "Grant Hammerspoon access in System Settings > Privacy & Security > Accessibility."
+  echo "If Hammerspoon was already running, select Reload Config from its menu."
 fi
 
 # remember to set up java

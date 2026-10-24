@@ -27,9 +27,37 @@ install.sh configures AI account links without installing Claude Code, Codex, or
 
 install.sh still prompts for dotfiles, OpenCode plugins, Homebrew packages, and AI configuration when they are complete. Check the required links and installed packages before each prompt, and retain prompts for incomplete setup.
 
+2026-10-21T18:17:48.526Z - gpt-6 - Jamison Dance
+
+The font completion check in install.sh accepts any Nerd Font, but ghostty-config requires MesloLGM Nerd Font. Check the configured family so another installed Nerd Font cannot hide missing Meslo fonts.
+
+2026-10-22T16:26:06.039Z - gpt-6 - Jamison Dance
+
+hammerspoon/init.lua did not load hs.ipc, so the installed hs command could not inspect or reload the configuration. The config now loads hs.ipc so window automation can be captured and checked through the local CLI.
+
+2026-10-22T16:40:00.489Z - gpt-6 - Jamison Dance
+
+hammerspoon/display-layouts.lua must verify actual desktop assignments because macOS 26.6 can return success from hs.spaces.moveWindowToSpace without moving a window. Restore now checks assignments after one second and reports incomplete desktop restoration instead of claiming success.
+
+2026-10-22T17:48:36.924Z - gpt-6 - Jamison Dance
+
+Chrome DevTools MCP launched testing windows on the active workspace, where Amethyst tiled them with personal apps. A shared executablePath config now routes new browser processes through bin/agent-chrome, which selects an empty desktop before Chrome starts.
+
+2026-10-23T18:11:40.909Z - gpt-6.1-sol - Jamison Dance
+
+The Homebrew manifest covers only formulae, while Hammerspoon is installed by a separate hard-coded step. Add a macOS cask manifest so required applications are visible and checked by the package install step.
+
+2026-10-23T20:07:24.525Z - gpt-6.1-sol - Jamison Dance
+
+bin/test_install.py hard-coded the missing-cask expectation to Hammerspoon, so adding required casks broke the installer test. Derive the expected cask list from homebrew-casks.txt so manifest changes remain covered.
+
 2026-10-23T23:45:43.966Z - gpt-6.1-sol - Jamison Dance
 
 bin/agent-chrome switches to the testing desktop before every headed launch, which interrupts keyboard focus even when Hammerspoon later returns to the previous workspace. Launch testing Chrome without changing the active workspace, and cover focus preservation in the browser checks.
+
+2026-10-23T23:59:35.346Z - gpt-6 - Jamison Dance
+
+CLAUDE.md lists gpf as a plain force push and br as a configured Git alias, but .zshrc uses --force-with-lease and .gitconfig has no br alias. Keep the command reference aligned with those files, and document that .zshrc already loads alias_reminder.zsh.
 
 2026-10-24T00:02:16.202Z - gpt-6.1-sol - Jamison Dance
 

@@ -12,6 +12,8 @@ gettext
 gh
 gifski
 git
+hashicorp/tap/packer
+hashicorp/tap/terraform
 htop
 jpeg
 jq

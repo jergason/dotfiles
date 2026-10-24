@@ -1,46 +1,37 @@
-# CLAUDE.md
+# Repository guide
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Personal macOS dotfiles. `install.sh` links config files into the home directory. See [README.md](README.md) for setup and account login commands.
 
-## What This Is
+## Files
 
-personal dotfiles repo for macos. symlinks config files to home directory via `install.sh`.
+| Path | Purpose |
+| --- | --- |
+| `.zshrc` | Zsh config with Oh My Zsh, the lambda theme, and vi-mode |
+| `.gitconfig` | Git aliases and defaults |
+| `ghostty-config` | Ghostty config and optional shaders |
+| `ghostty-themes.zsh` | Loads the `themes` command from `bin/ghostty-themes` |
+| `alias_reminder.zsh` | Suggests aliases before commands run |
+| `gitclean.zsh` | Defines the `gitclean` branch cleanup command |
+| `shaders/` | GLSL shaders for Ghostty |
+| `homebrew-packages.txt` | Homebrew formulae |
+| `homebrew-casks.txt` | macOS apps |
+| `hammerspoon/` | Window layouts and agent browser placement |
+| `ai/` | Shared agent instructions, account wrappers, and installers |
+| `install.sh` | Interactive setup |
 
-## Structure
+## Commands
 
-- `.zshrc` - zsh config, uses oh-my-zsh with lambda theme, vi-mode plugin
-- `.gitconfig` - git aliases (co, ci, st, br, lg, grog)
-- `ghostty-config` - terminal config for ghostty, includes optional shader support
-- `alias_reminder.zsh` - preexec hook that suggests aliases when you type full commands
-- `shaders/` - submodule/collection of glsl shaders for ghostty terminal effects
-- `homebrew-packages.txt` - list of brew packages to install
-- `install.sh` - interactive setup script, prompts for each component
+`.zshrc` defines these commands:
 
-## Installation
+| Command | Expansion or behavior |
+| --- | --- |
+| `gpu` | `git push -u origin HEAD` |
+| `gpf` | `git push --force-with-lease origin HEAD` |
+| `gca` | `git commit --amend --no-edit` |
+| `gitclean` | Reports branches safe to delete. Add `--apply` to delete them. |
 
-```bash
-./install.sh
-```
+`.gitconfig` defines `co`, `ci`, and `st` for checkout, commit, and status. `lg` and `grog` show log graphs.
 
-The script asks before each setup step and skips installed tools. Oh My Zsh runs before the dotfile links. Claude Code, Codex, and Pi have separate install steps before shared AI configuration.
+## Local overrides
 
-symlinks created:
-- `~/.zshrc` -> this repo's `.zshrc`
-- `~/.gitconfig` -> this repo's `.gitconfig`
-- `~/.config/ghostty/config` -> this repo's `ghostty-config`
-
-## Key Aliases
-
-shell (in .zshrc):
-- `gpu` - `git push -u origin head`
-- `gpf` - `git push -f origin head`
-- `gca` - `git commit --amend --no-edit`
-- `gitclean` - delete merged branches
-
-git (in .gitconfig):
-- `co`, `ci`, `st`, `br` - standard shortcuts
-- `lg`, `grog` - pretty log graphs
-
-## Local Overrides
-
-put machine-specific stuff in `~/.zshrc.local` - it gets sourced if it exists.
+`.zshrc` loads `~/.zshrc.local` when it exists. Put machine-specific settings there.

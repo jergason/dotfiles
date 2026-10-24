@@ -96,6 +96,7 @@ if [ -f "$gitclean_script" ]; then
 fi
 unset gitclean_script
 source "${${(%):-%N}:A:h}/ghostty-themes.zsh"
+source "${${(%):-%N}:A:h}/drplt-open.zsh"
 alias gpu='git push -u origin HEAD'
 alias gpun='git push --no-verify -u origin HEAD'
 alias gpf='git push --force-with-lease origin HEAD'

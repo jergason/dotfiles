@@ -1,26 +1,28 @@
-# Ghostty theme browser next steps
+# Ghostty theme browser investigation
 
-## Confirmed cause
+This note records a past diagnosis. The installed version and browser behavior have not been rechecked here.
 
-The installed Ghostty tip build is `1.3.2-main-+32e76d8ed`, from July 26, 2026. Its theme browser creates an input loop but never starts it. Both `themes` and a direct `ghostty +list-themes` call fail. Terminal replies can reach the shell as stray input and produce `zsh: 1 not found`.
+## Recorded cause
 
-[Ghostty PR #13466](https://github.com/ghostty-org/ghostty/pull/13466), merged July 28, 2026, starts the input loop and fixes the lifetime of the browser's environment map. The installed commit was checked against that fix and does not contain it.
+The affected tip build was `1.3.2-main-+32e76d8ed`, from July 26, 2026. Its theme browser created an input loop but did not start it. Both `themes` and `ghostty +list-themes` failed. Terminal replies could reach the shell as stray input and produce `zsh: 1 not found`.
 
-The earlier diagnosis that Python's child-process launch caused the freeze was incorrect. Replacing Python with Ghostty is still a reasonable launch method, but it does not fix this Ghostty bug.
+[Ghostty PR #13466](https://github.com/ghostty-org/ghostty/pull/13466), merged July 28, 2026, starts the input loop and fixes the lifetime of the browser's environment map. The affected commit did not contain the fix.
 
-## Next steps
+The initial diagnosis blamed Python's child-process launch. Replacing that launch with a direct Ghostty process did not fix the browser bug.
 
-1. Update Ghostty to a tip build that includes PR #13466.
-2. Finish or save work in terminal sessions before quitting Ghostty.
-3. Quit Ghostty completely and reopen it.
-4. Run `ghostty +version` to confirm the old build was replaced.
-5. Run `ghostty +list-themes` in a fresh split. Verify that the preview renders, navigation changes the selected theme, and Escape returns to the shell without stray input.
-6. Run `themes` and repeat the same checks. If the alias is unavailable, run `source ~/code/dotfiles/ghostty-themes.zsh` first.
-7. Run `themes random dark`, then press `Ctrl+A`, then `R` to reload the config. Verify the theme changes while the light theme setting stays intact.
+## Update and check the browser
 
-If the direct browser still fails, record the new version and behavior before changing the helper again. Startup escape sequences alone do not prove that the browser works.
+1. Update Ghostty to a build that includes PR #13466.
+2. Save or finish work in terminal sessions before quitting Ghostty.
+3. Quit Ghostty completely, then reopen it.
+4. Run `ghostty +version` to confirm the affected build was replaced.
+5. Run `ghostty +list-themes` in a fresh split. Check that the preview renders and navigation changes the selected theme. Press Escape and check that no stray input reaches the shell.
+6. Run `themes` and repeat those checks. If the alias is unavailable, first run `source ~/code/dotfiles/ghostty-themes.zsh`.
+7. Run `themes random dark`. Press `Ctrl+A`, then `R` to reload. Check that the dark theme changes and the light setting stays intact.
 
-## Available meanwhile
+If the direct browser still fails, record the new version and behavior before changing the helper. Startup escape sequences do not prove that navigation or exit works.
+
+## Use themes without the browser
 
 These commands bypass the interactive browser:
 
@@ -34,16 +36,14 @@ themes add dark "Rose Pine Moon"
 ghostty +list-themes --plain
 ```
 
-After a theme change, press `Ctrl+A`, then `R` to reload Ghostty.
+After a theme change, press `Ctrl+A`, then `R` to reload Ghostty. Favorites live in `ghostty-favorites.json`. The helper edits `ghostty-config`, linked to `~/.config/ghostty/config`.
 
-Favorites are stored in `ghostty-favorites.json`. The helper updates the theme setting in `ghostty-config`, which is linked from `~/.config/ghostty/config`.
+## Recorded checks
 
-## Verification already completed
+Tests with temporary files passed for favorite selection, cycling, favorite edits, config preservation, and symlink preservation. The process-handoff test also passed. These tests did not check the interactive UI. Browser verification was pending a Ghostty update.
 
-Favorite selection, cycling, favorite edits, config preservation, and symlink preservation passed checks with temporary copies. The process-handoff test passes, but does not verify Ghostty's interactive UI. Full browser verification remains pending the Ghostty update.
-
-Run the process-handoff test with:
+Run the Ghostty helper tests with:
 
 ```sh
-PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s bin -p 'test_*.py'
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s bin -p 'test_ghostty_themes.py'
 ```
