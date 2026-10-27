@@ -456,7 +456,7 @@
       "skillPath": "apps/skills/extra/plannotator-compound/SKILL.md",
       "skillFolderHash": "e7cb3bf5836705facedb2f94c6648f269d3f0748",
       "installedAt": "2026-10-13T14:35:24.424Z",
-      "updatedAt": "2026-10-13T14:35:24.424Z"
+      "updatedAt": "2026-10-27T05:44:36.913Z"
     },
     "plannotator-setup-goal": {
       "source": "backnotprop/plannotator",
@@ -465,7 +465,7 @@
       "skillPath": "apps/skills/extra/plannotator-setup-goal/SKILL.md",
       "skillFolderHash": "29d5d60c2b8a88c1786d7bbdbbfa37e44b64f6a5",
       "installedAt": "2026-10-13T14:35:24.427Z",
-      "updatedAt": "2026-10-13T14:35:24.427Z"
+      "updatedAt": "2026-10-27T05:44:36.915Z"
     },
     "plannotator-visual-explainer": {
       "source": "backnotprop/plannotator",
@@ -474,7 +474,7 @@
       "skillPath": "apps/skills/extra/plannotator-visual-explainer/SKILL.md",
       "skillFolderHash": "48b1d39f317db181b75c8c4dafba6b78bb8f17a4",
       "installedAt": "2026-10-13T14:35:24.429Z",
-      "updatedAt": "2026-10-23T17:29:40.611Z"
+      "updatedAt": "2026-10-27T05:44:36.917Z"
     },
     "diagram-flows": {
       "source": "jergason/skills",
