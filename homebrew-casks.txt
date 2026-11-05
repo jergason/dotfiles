@@ -1,3 +1,4 @@
 amethyst
+gcloud-cli
 hammerspoon
 op

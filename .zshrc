@@ -96,7 +96,6 @@ if [ -f "$gitclean_script" ]; then
 fi
 unset gitclean_script
 source "${${(%):-%N}:A:h}/ghostty-themes.zsh"
-source "${${(%):-%N}:A:h}/drplt-open.zsh"
 alias gpu='git push -u origin HEAD'
 alias gpun='git push --no-verify -u origin HEAD'
 alias gpf='git push --force-with-lease origin HEAD'
@@ -216,3 +215,12 @@ fi
 
 # PostgreSQL tools for Droplet local development
 export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
+
+# pnpm
+# Append, not prepend, so nvm's corepack pnpm shim wins and the global pnpm is only a fallback.
+export PNPM_HOME='/Users/jamison/Library/pnpm'
+case ":$PATH:" in
+  *":$PNPM_HOME/bin:"*) ;;
+  *) export PATH="$PATH:$PNPM_HOME/bin" ;;
+esac
+# pnpm end

@@ -19,6 +19,7 @@ jpeg
 jq
 luarocks
 ninja
+python@3.13
 ripgrep
 shellcheck
 tree

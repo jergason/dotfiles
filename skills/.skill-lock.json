@@ -319,9 +319,9 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/jakubkrehel/skills.git",
       "skillPath": "skills/better-accessibility/SKILL.md",
-      "skillFolderHash": "8fdb2f25f822c2ffaca438e2d325eed9ac6e9b9b",
+      "skillFolderHash": "fab04847b6c09bf54e981098cfb03faca0e1a752",
       "installedAt": "2026-07-28T16:55:13.826Z",
-      "updatedAt": "2026-10-22T21:48:54.359Z"
+      "updatedAt": "2026-10-27T19:40:35.718Z"
     },
     "visual-explainer": {
       "source": "nicobailon/visual-explainer",
@@ -347,9 +347,9 @@
       "sourceUrl": "https://github.com/cursor/plugins.git",
       "ref": "main",
       "skillPath": "pstack/skills/swarm/SKILL.md",
-      "skillFolderHash": "227d0b45a15d14d47cdefd096af2a94c12e7d533",
+      "skillFolderHash": "4a1abb26cce3450f9b14056109f974edaeff4ec1",
       "installedAt": "2026-08-29T19:33:58.708Z",
-      "updatedAt": "2026-10-23T18:05:39.708Z"
+      "updatedAt": "2026-10-27T19:40:02.760Z"
     },
     "technical-writing": {
       "source": "cursor/plugins",
@@ -435,9 +435,9 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/typesafe-ai/skills.git",
       "skillPath": "skills/typesafe-ai/SKILL.md",
-      "skillFolderHash": "678c375b883794bf4292715a43acbba5c84681aa",
+      "skillFolderHash": "1d7aa7574f194619b5189d96c6f79bdd4cc452f2",
       "installedAt": "2026-09-18T22:58:13.527Z",
-      "updatedAt": "2026-09-18T22:58:13.527Z"
+      "updatedAt": "2026-10-27T19:40:37.933Z"
     },
     "fframes-video": {
       "source": "fframes.studio",
@@ -501,9 +501,9 @@
       "sourceUrl": "https://github.com/cursor/plugins.git",
       "ref": "main",
       "skillPath": "pstack/skills/arena/SKILL.md",
-      "skillFolderHash": "849b0b1191f81144ea3a7c7f117011f54d5c872f",
+      "skillFolderHash": "276eb958ee333a81105a66ef3f417b72ddf88126",
       "installedAt": "2026-10-23T18:05:39.694Z",
-      "updatedAt": "2026-10-23T18:05:39.694Z"
+      "updatedAt": "2026-10-27T19:40:05.507Z"
     },
     "automate-me": {
       "source": "cursor/plugins",
@@ -561,9 +561,9 @@
       "sourceUrl": "https://github.com/cursor/plugins.git",
       "ref": "main",
       "skillPath": "pstack/skills/create-formal-verification-skill/SKILL.md",
-      "skillFolderHash": "1a9d7cf78485735e6ff3b14379dbe4a62c4c4d76",
+      "skillFolderHash": "091f2a26d46f7bed511d0532a1329532a45899e0",
       "installedAt": "2026-10-23T18:05:39.696Z",
-      "updatedAt": "2026-10-23T18:05:39.696Z"
+      "updatedAt": "2026-10-27T19:40:10.755Z"
     },
     "figure-it-out": {
       "source": "cursor/plugins",
@@ -601,9 +601,9 @@
       "sourceUrl": "https://github.com/cursor/plugins.git",
       "ref": "main",
       "skillPath": "pstack/skills/interrogate/SKILL.md",
-      "skillFolderHash": "9768af06553215b2381710d5813796c4ddefe91f",
+      "skillFolderHash": "3a49e73a4ffd56f682288dd145be9345bfec7434",
       "installedAt": "2026-10-23T18:05:39.698Z",
-      "updatedAt": "2026-10-23T18:05:39.698Z"
+      "updatedAt": "2026-10-27T19:40:13.302Z"
     },
     "ketchup": {
       "source": "cursor/plugins",
@@ -651,9 +651,9 @@
       "sourceUrl": "https://github.com/cursor/plugins.git",
       "ref": "main",
       "skillPath": "pstack/skills/poteto-help/SKILL.md",
-      "skillFolderHash": "4eb7233fb4a068dfa9ca21cbca24f264728b734e",
+      "skillFolderHash": "f0670fe669e944b4a42f027bd440aa21d50e46f8",
       "installedAt": "2026-10-23T18:05:39.700Z",
-      "updatedAt": "2026-10-23T18:05:39.700Z"
+      "updatedAt": "2026-10-27T19:40:15.931Z"
     },
     "poteto-mode": {
       "source": "cursor/plugins",
@@ -661,9 +661,9 @@
       "sourceUrl": "https://github.com/cursor/plugins.git",
       "ref": "main",
       "skillPath": "pstack/skills/poteto-mode/SKILL.md",
-      "skillFolderHash": "c67258f279f1e1c863e40d520eccae2b5bebd6e6",
+      "skillFolderHash": "15bfd53092b025b4599d47a01ffb8e39bfe43a6b",
       "installedAt": "2026-10-23T18:05:39.700Z",
-      "updatedAt": "2026-10-23T18:05:39.700Z"
+      "updatedAt": "2026-10-27T19:40:18.938Z"
     },
     "principle-attack-the-premise": {
       "source": "cursor/plugins",
@@ -691,9 +691,9 @@
       "sourceUrl": "https://github.com/cursor/plugins.git",
       "ref": "main",
       "skillPath": "pstack/skills/principle-explain-the-number/SKILL.md",
-      "skillFolderHash": "2f468162c9ce85478f1fb1198149646a2ef0f735",
+      "skillFolderHash": "7d97b8efd90780774b38ccb9dad1aa232bd51ff9",
       "installedAt": "2026-10-23T18:05:39.702Z",
-      "updatedAt": "2026-10-23T18:05:39.702Z"
+      "updatedAt": "2026-10-27T19:40:22.089Z"
     },
     "principle-prove-it-works": {
       "source": "cursor/plugins",
@@ -731,9 +731,9 @@
       "sourceUrl": "https://github.com/cursor/plugins.git",
       "ref": "main",
       "skillPath": "pstack/skills/reflect/SKILL.md",
-      "skillFolderHash": "e44a51da42eb95e3ab2d13231fe942e218424f66",
+      "skillFolderHash": "fbc98c056509e9ee3dfceebbc0acfa4591491cc2",
       "installedAt": "2026-10-23T18:05:39.707Z",
-      "updatedAt": "2026-10-23T18:05:39.707Z"
+      "updatedAt": "2026-10-27T19:40:25.153Z"
     },
     "setup-pstack": {
       "source": "cursor/plugins",
@@ -741,9 +741,9 @@
       "sourceUrl": "https://github.com/cursor/plugins.git",
       "ref": "main",
       "skillPath": "pstack/skills/setup-pstack/SKILL.md",
-      "skillFolderHash": "d533da1671e44234a9f72d1d4db8043cedd25eb2",
+      "skillFolderHash": "800811ddcb1d1d1831bfd853cfad14429a3d6842",
       "installedAt": "2026-10-23T18:05:39.707Z",
-      "updatedAt": "2026-10-23T18:05:39.707Z"
+      "updatedAt": "2026-10-27T19:40:28.587Z"
     },
     "sharpen": {
       "source": "cursor/plugins",
@@ -771,9 +771,9 @@
       "sourceUrl": "https://github.com/cursor/plugins.git",
       "ref": "main",
       "skillPath": "pstack/skills/statechart/SKILL.md",
-      "skillFolderHash": "e0f2895909a11af0b07cfff54af4edb1d14ec4da",
+      "skillFolderHash": "a79a48c6970be3b63d6efefb0a306b7c87de88d0",
       "installedAt": "2026-10-23T18:05:39.708Z",
-      "updatedAt": "2026-10-23T18:05:39.708Z"
+      "updatedAt": "2026-10-27T19:40:33.885Z"
     },
     "tdd": {
       "source": "cursor/plugins",
