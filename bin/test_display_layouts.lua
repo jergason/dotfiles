@@ -33,7 +33,10 @@ local function session()
           stop = function(self) self.running = false end }
         return timer
       end } },
-      caffeinate = { watcher = { new = watcher, systemDidWake = 1, screensDidWake = 2 } },
+      caffeinate = {
+        sessionProperties = function() return { CGSSessionScreenIsLocked = state.locked } end,
+        watcher = { new = watcher, systemDidWake = 1, screensDidWake = 2, screensDidUnlock = 3 },
+      },
       application = { get = function() return true end },
       eventtap = { keyStroke = function(_, key) table.insert(state.keys, key) end },
       autoLaunch = function() end,
@@ -44,9 +47,19 @@ local function session()
     state.setup, state.count, state.profile = setup, count, profile
     env.amethystMonitor.screens.callback()
   end
-  function state.settle() env.amethystMonitor.settle.callback() end
+  local function fireIfStarted(timer)
+    if timer.running then
+      timer.running = false
+      timer.callback()
+    end
+  end
+  function state.settle() fireIfStarted(env.amethystMonitor.settle) end
   function state.wake() env.amethystMonitor.wake.callback(1) end
-  function state.reflow() env.amethystMonitor.reflow.callback() end
+  function state.unlock()
+    state.locked = nil
+    env.amethystMonitor.wake.callback(env.hs.caffeinate.watcher.screensDidUnlock)
+  end
+  function state.reflow() fireIfStarted(env.amethystMonitor.reflow) end
   return state
 end
 
@@ -55,6 +68,7 @@ quick.change("laptop", 1, false)
 quick.change("work", 3, true)
 quick.settle()
 assert(quick.restores == 1, "A quick unplug/replug must restore the work profile")
+quick.change("work", 3, true)
 quick.settle()
 assert(quick.restores == 1, "An unchanged setup must not trigger repeated restores")
 
@@ -78,4 +92,28 @@ local wake = session()
 wake.wake()
 wake.settle()
 assert(wake.restores == 1, "Wake must restore even if monitor IDs stay the same")
+
+local lockedWake = session()
+lockedWake.locked = true
+lockedWake.wake()
+lockedWake.settle()
+assert(lockedWake.restores == 0 and #lockedWake.keys == 0,
+  "Wake at the lock screen must not restore or send keystrokes")
+lockedWake.unlock()
+lockedWake.settle()
+assert(lockedWake.restores == 1, "Unlock must restore the layout held at the lock screen")
+lockedWake.unlock()
+lockedWake.settle()
+assert(lockedWake.restores == 1, "An unlock with nothing pending must not restore again")
+
+local lockedUnplug = session()
+lockedUnplug.locked = true
+lockedUnplug.change("laptop", 1, false)
+lockedUnplug.settle()
+assert(#lockedUnplug.keys == 0, "Amethyst keystrokes must not go to the lock screen")
+lockedUnplug.unlock()
+lockedUnplug.settle()
+lockedUnplug.reflow()
+assert(table.concat(lockedUnplug.keys) == "dz",
+  "Unlock must apply the monitor change made while locked")
 print("Display layout event checks passed")
