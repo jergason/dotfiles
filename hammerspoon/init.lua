@@ -22,6 +22,8 @@ amethystMonitor.reflow = hs.timer.delayed.new(0.5, function()
 end)
 
 amethystMonitor.settle = hs.timer.delayed.new(5, function()
+  -- While locked, no window reports isStandard() and keystrokes go to the lock screen.
+  if hs.caffeinate.sessionProperties().CGSSessionScreenIsLocked then return end
   local count = #hs.screen.allScreens()
   local becameSingle = previousCount > 1 and count == 1
   local setup = displayLayouts.signature()
@@ -51,6 +53,8 @@ amethystMonitor.wake = hs.caffeinate.watcher.new(function(event)
     or event == hs.caffeinate.watcher.screensDidWake then
     setupChanged = true
     screenChanged()
+  elseif event == hs.caffeinate.watcher.screensDidUnlock then
+    amethystMonitor.settle:start()
   end
 end):start()
 

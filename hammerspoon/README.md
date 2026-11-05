@@ -24,7 +24,7 @@ The **Layouts** menu must appear in the menu bar. If a check fails, reload the c
 
 Arrange your windows and desktops. Select **Layouts > Save current layout…** and enter a name such as `Work` or `Home`. Each connected monitor set has one profile. Save again with those monitors connected to update it.
 
-Hammerspoon restores the matching profile five seconds after the last display event. It also restores after wake. To restore manually, select **Layouts > Restore saved layout**.
+Hammerspoon restores the matching profile five seconds after the last display event. It also restores after wake. If the screen is locked at that point, restore waits until you unlock it. To restore manually, select **Layouts > Restore saved layout**.
 
 Profiles contain window sizes, positions, desktop assignments, and the active desktop on each display. Hammerspoon stores them locally under `displayLayouts.v1`, including window titles.
 
