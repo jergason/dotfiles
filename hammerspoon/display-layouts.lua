@@ -1,5 +1,7 @@
 -- Profiles stay in Hammerspoon's local settings, including private window titles.
 local M = {}
+local moduleDir = debug.getinfo(1, "S").source:sub(2):match("^(.*)/")
+local desktops = dofile(moduleDir .. "/desktops.lua")
 local settingsKey = "displayLayouts.v1"
 local profiles = hs.settings.get(settingsKey) or {}
 M.windows = hs.window.filter.new():setDefaultFilter({})
@@ -24,12 +26,6 @@ function M.hasProfile()
   return profiles[M.signature()] ~= nil
 end
 
-local function desktops(uuid)
-  return hs.fnutils.filter(hs.spaces.spacesForScreen(uuid) or {}, function(id)
-    return hs.spaces.spaceType(id) == "user"
-  end)
-end
-
 local function notify(message)
   print("Display layouts: " .. message)
   hs.alert.show(message)
@@ -43,7 +39,7 @@ function M.save(name)
   local snapshot = { name = name or "Saved layout", screens = screens(), spaces = {},
     activeSpaces = hs.spaces.activeSpaces(), windows = {} }
   for _, screen in ipairs(snapshot.screens) do
-    snapshot.spaces[screen.uuid] = desktops(screen.uuid)
+    snapshot.spaces[screen.uuid] = desktops.list(screen.uuid)
   end
   for _, window in ipairs(M.windows:getWindows()) do
     local spaces = hs.spaces.windowSpaces(window) or {}
@@ -93,6 +89,33 @@ local function matchWindows(saved)
   return result
 end
 
+-- macOS can give a desktop a new ID or hand it to another display after a reconnect,
+-- so a saved ID that is gone falls back to the desktop in the same position.
+local function mapDesktops(saved, current)
+  local targets, used = {}, {}
+  for _, id in ipairs(saved) do
+    if hs.fnutils.contains(current, id) then targets[id], used[id] = id, true end
+  end
+  for i, id in ipairs(saved) do
+    if not targets[id] then
+      local target = (current[i] and not used[current[i]]) and current[i]
+        or hs.fnutils.find(current, function(candidate) return not used[candidate] end)
+      if target then targets[id], used[target] = target, true end
+    end
+  end
+  return targets
+end
+
+local function translate(frame, oldScreen, newScreen)
+  return { x = newScreen.x + frame.x - oldScreen.x, y = newScreen.y + frame.y - oldScreen.y,
+    w = frame.w, h = frame.h }
+end
+
+local function append(list, more)
+  table.move(more, 1, #more, #list + 1, list)
+  return list
+end
+
 local function restore()
   local profile = profiles[M.signature()]
   if not profile then return nil, "No saved layout for these monitors" end
@@ -100,88 +123,65 @@ local function restore()
     return nil, "Enable Displays have separate Spaces before restoring"
   end
 
-  local targets, failures = {}, {}
-  for _, screen in ipairs(profile.screens) do
-    local current = desktops(screen.uuid)
-    local saved = profile.spaces[screen.uuid]
-    -- Create only missing desktops. Repeated restores cannot add duplicates.
-    while #current < #saved do
-      local ok, err = hs.spaces.addSpaceToScreen(screen.uuid)
-      if not ok then return nil, "Cannot create desktop: " .. tostring(err) end
-      local updated = desktops(screen.uuid)
-      if #updated <= #current then return nil, "Desktop creation did not finish; try Restore again" end
-      current = updated
-    end
-    local used = {}
-    for _, id in ipairs(saved) do
-      if hs.fnutils.contains(current, id) then targets[id], used[id] = id, true end
-    end
-    for i, id in ipairs(saved) do
-      if not targets[id] then
-        local target = not used[current[i]] and current[i]
-          or hs.fnutils.find(current, function(candidate) return not used[candidate] end)
-        targets[id], used[target] = target, true
-      end
-    end
+  local wanted = {}
+  for uuid, saved in pairs(profile.spaces) do wanted[uuid] = #saved end
+  local failures = desktops.ensureCount(wanted)
+
+  local targets = {}
+  for uuid, saved in pairs(profile.spaces) do
+    for savedID, id in pairs(mapDesktops(saved, desktops.list(uuid))) do targets[savedID] = id end
   end
 
   local matches = matchWindows(profile.windows)
-  local verification = {}
-  local restored = 0
+  local placed = {}
   for i, item in ipairs(profile.windows) do
-    local window = matches[i]
-    if window then
-      local target = targets[item.spaces[1]]
-      local oldScreen = hs.fnutils.find(profile.screens, function(s) return s.uuid == item.screen end)
-      local newFrame = hs.screen.find(item.screen):fullFrame()
-      -- Position first, then request the saved desktop on the target monitor.
-      window:setFrame({ x = newFrame.x + item.frame.x - oldScreen.frame.x,
-        y = newFrame.y + item.frame.y - oldScreen.frame.y,
-        w = item.frame.w, h = item.frame.h }, 0)
-      local current = hs.spaces.windowSpaces(window) or {}
-      local ok, err = true, nil
-      if not hs.fnutils.contains(current, target) then
-        ok, err = hs.spaces.moveWindowToSpace(window, target)
-      end
-      if ok then
-        restored = restored + 1
-        table.insert(verification, { window = window, target = target, screen = item.screen })
-      else
-        table.insert(failures, item.bundle .. ": " .. tostring(err))
-      end
+    if matches[i] then placed[#placed + 1] = { item = item, window = matches[i] } end
+  end
+  for _, p in ipairs(placed) do
+    local old = hs.fnutils.find(profile.screens, function(s) return s.uuid == p.item.screen end)
+    p.window:setFrame(translate(p.item.frame, old.frame, hs.screen.find(p.item.screen):fullFrame()), 0)
+  end
+
+  local assignments = {}
+  for _, p in ipairs(placed) do
+    local space = targets[p.item.spaces[1]]
+    if space then
+      assignments[#assignments + 1] = { window = p.window, space = space }
+    else
+      failures[#failures + 1] = p.item.bundle .. ": saved desktop has no match on this display"
     end
   end
-  for _, screen in ipairs(profile.screens) do
-    local target = targets[profile.activeSpaces[screen.uuid]]
-    if target and hs.spaces.activeSpaceOnScreen(screen.uuid) ~= target then
-      local ok, err = hs.spaces.gotoSpace(target)
-      if not ok then table.insert(failures, "Active desktop: " .. tostring(err)) end
-    end
+  append(failures, desktops.assign(assignments))
+
+  local active = {}
+  for uuid, savedID in pairs(profile.activeSpaces) do active[uuid] = targets[savedID] end
+  append(failures, desktops.activate(active))
+
+  local postconditions = hs.fnutils.imap(assignments, function(a)
+    return { problem = "Window " .. a.window:id() .. ": desktop assignment did not change",
+      holds = function() return hs.fnutils.contains(hs.spaces.windowSpaces(a.window) or {}, a.space) end }
+  end)
+  for uuid, space in pairs(active) do
+    postconditions[#postconditions + 1] = { problem = "Display " .. uuid .. ": active desktop did not change",
+      holds = function() return hs.spaces.activeSpaceOnScreen(uuid) == space end }
   end
-  if #failures > 0 then print(table.concat(failures, "\n")) end
-  return { restored = restored, saved = #profile.windows, failures = failures, name = profile.name }, verification
+  return { restored = #placed, saved = #profile.windows, failures = failures, name = profile.name }, postconditions
 end
 
 function M.restore(quiet)
-  local ok, result, detail = pcall(restore)
-  if not ok then detail, result = result, nil end
+  local ok, result, postconditions = pcall(restore)
+  if not ok then postconditions, result = result, nil end
   if not result then
-    if not quiet then notify(tostring(detail)) end
-    print("Display layouts: " .. tostring(detail))
-    return nil, detail
+    if not quiet then notify(tostring(postconditions)) end
+    print("Display layouts: " .. tostring(postconditions))
+    return nil, postconditions
   end
   local setup = M.signature()
   if M.verifyTimer then M.verifyTimer:stop() end
   M.verifyTimer = hs.timer.doAfter(1, function()
     if M.signature() ~= setup then return end
-    -- Recent macOS versions can report success without moving a window.
-    -- Read the actual assignment after WindowServer processes the request.
-    for _, job in ipairs(detail) do
-      local spaces = hs.spaces.windowSpaces(job.window) or {}
-      if not hs.fnutils.contains(spaces, job.target) then
-        table.insert(result.failures, "Window " .. job.window:id() .. ": desktop assignment did not change")
-      end
-    end
+    local unmet = hs.fnutils.filter(postconditions, function(check) return not check.holds() end)
+    append(result.failures, hs.fnutils.imap(unmet, function(check) return check.problem end))
     result.verified = true
     M.lastResult = result
     notify("Positioned " .. result.name .. ": " .. result.restored .. "/" .. result.saved .. " windows"
