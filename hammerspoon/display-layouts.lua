@@ -48,7 +48,6 @@ function M.save(name)
   for _, window in ipairs(M.windows:getWindows()) do
     local spaces = hs.spaces.windowSpaces(window) or {}
     if window:isStandard() and not window:isFullScreen() and #spaces == 1
-      and not agentBrowser.isTestingWindow(window)
       and hs.spaces.spaceType(spaces[1]) == "user" then
       table.insert(snapshot.windows, { id = window:id(), pid = window:application():pid(),
         bundle = window:application():bundleID(), title = window:title(),
@@ -69,7 +68,7 @@ end
 -- when that app had one saved window and has one unmatched current window.
 local function matchWindows(saved)
   local available = hs.fnutils.filter(M.windows:getWindows(), function(w)
-    return w:isStandard() and not w:isFullScreen() and not agentBrowser.isTestingWindow(w)
+    return w:isStandard() and not w:isFullScreen()
   end)
   local result, used = {}, {}
   local predicates = {

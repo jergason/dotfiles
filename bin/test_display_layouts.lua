@@ -12,7 +12,6 @@ local function session()
   local env = setmetatable({
     require = function() end,
     dofile = function(path)
-      if path == "/repo/hammerspoon/agent-browser.lua" then return {} end
       assert(path == "/repo/hammerspoon/display-layouts.lua")
       return layouts
     end,

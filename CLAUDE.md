@@ -15,7 +15,7 @@ Personal macOS dotfiles. `install.sh` links config files into the home directory
 | `shaders/` | GLSL shaders for Ghostty |
 | `homebrew-packages.txt` | Homebrew formulae |
 | `homebrew-casks.txt` | macOS apps |
-| `hammerspoon/` | Window layouts and agent browser placement |
+| `hammerspoon/` | Window layouts |
 | `ai/` | Shared agent instructions, account wrappers, and installers |
 | `install.sh` | Interactive setup |
 
