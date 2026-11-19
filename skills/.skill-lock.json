@@ -24,18 +24,9 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/mattpocock/skills.git",
       "skillPath": "skills/engineering/improve-codebase-architecture/SKILL.md",
-      "skillFolderHash": "39bd9cc130f7dfcc4e3ea0b3613f6ebed0d0ad2b",
+      "skillFolderHash": "587147dd230da299cc5e84971cb0a33f6676f8a6",
       "installedAt": "2026-06-15T20:28:24.696Z",
-      "updatedAt": "2026-10-22T21:47:38.311Z"
-    },
-    "codebase-design": {
-      "source": "mattpocock/skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/mattpocock/skills.git",
-      "skillPath": "skills/engineering/codebase-design/SKILL.md",
-      "skillFolderHash": "07ba1cd60efc12d0d3a083005c1d9651cf15e39a",
-      "installedAt": "2026-06-18T16:29:32.575Z",
-      "updatedAt": "2026-10-22T21:47:39.460Z"
+      "updatedAt": "2026-11-16T04:35:42.975Z"
     },
     "domain-modeling": {
       "source": "mattpocock/skills",
@@ -51,36 +42,9 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/mattpocock/skills.git",
       "skillPath": "skills/productivity/grilling/SKILL.md",
-      "skillFolderHash": "28aceb4c9567b985cb47f7db88cf23c9f33af8b8",
+      "skillFolderHash": "f551b6e0d219fdda0b6abf277f8f915b3127d1e9",
       "installedAt": "2026-06-18T16:29:32.579Z",
-      "updatedAt": "2026-10-22T21:47:42.517Z"
-    },
-    "make-pr-easy-to-review": {
-      "source": "cursor/plugins",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/cursor/plugins.git",
-      "skillPath": "cursor-team-kit/skills/make-pr-easy-to-review/SKILL.md",
-      "skillFolderHash": "30493c1d9b061827149f0caafca027a9016f67c6",
-      "installedAt": "2026-06-24T15:04:20.365Z",
-      "updatedAt": "2026-06-24T15:04:20.365Z"
-    },
-    "thermo-nuclear-code-quality-review": {
-      "source": "cursor/plugins",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/cursor/plugins.git",
-      "skillPath": "cursor-team-kit/skills/thermo-nuclear-code-quality-review/SKILL.md",
-      "skillFolderHash": "d9c8935dd560b3b6f5941247d04a1843f8c7cc35",
-      "installedAt": "2026-06-24T15:04:20.371Z",
-      "updatedAt": "2026-06-24T15:04:20.371Z"
-    },
-    "thermo-nuclear-review": {
-      "source": "cursor/plugins",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/cursor/plugins.git",
-      "skillPath": "thermos/skills/thermo-nuclear-review/SKILL.md",
-      "skillFolderHash": "b222e50771b6bc6f7d2b926b86da2342f160bb79",
-      "installedAt": "2026-06-24T15:04:20.380Z",
-      "updatedAt": "2026-06-24T15:04:20.380Z"
+      "updatedAt": "2026-11-16T04:35:43.057Z"
     },
     "deslop": {
       "source": "cursor/plugins",
@@ -114,18 +78,10 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/jakubkrehel/skills.git",
       "skillPath": "skills/better-accessibility/SKILL.md",
-      "skillFolderHash": "fab04847b6c09bf54e981098cfb03faca0e1a752",
+      "skillFolderHash": "1ab8faf7e19752c334f4922439d025a3d1ebc56d",
       "installedAt": "2026-07-28T16:55:13.826Z",
-      "updatedAt": "2026-10-27T19:40:35.718Z"
-    },
-    "visual-explainer": {
-      "source": "nicobailon/visual-explainer",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/nicobailon/visual-explainer.git",
-      "skillPath": "plugins/visual-explainer/SKILL.md",
-      "skillFolderHash": "0c447e2bc5c9c8d885ecc7551906623e88a1ae5e",
-      "installedAt": "2026-08-03T23:14:21.591Z",
-      "updatedAt": "2026-10-22T21:48:57.348Z"
+      "updatedAt": "2026-11-18T17:16:32.827Z",
+      "commit": "547d415dc10a23e66088eba5aa6664e6e772432c"
     },
     "show-me": {
       "source": "humanlayer/skills",
@@ -136,23 +92,14 @@
       "installedAt": "2026-08-19T16:22:13.652Z",
       "updatedAt": "2026-09-22T19:19:17.956Z"
     },
-    "thermos": {
-      "source": "cursor/plugins",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/cursor/plugins.git",
-      "skillPath": "thermos/skills/thermos/SKILL.md",
-      "skillFolderHash": "56e7ab69f83a54852b54512b536c95ea45ecf1e1",
-      "installedAt": "2026-08-29T19:33:58.711Z",
-      "updatedAt": "2026-08-29T19:33:58.711Z"
-    },
     "plannotator-compound": {
       "source": "backnotprop/plannotator",
       "sourceType": "github",
       "sourceUrl": "https://github.com/backnotprop/plannotator.git",
       "skillPath": "apps/skills/extra/plannotator-compound/SKILL.md",
-      "skillFolderHash": "e7cb3bf5836705facedb2f94c6648f269d3f0748",
+      "skillFolderHash": "73dcebd303714bcc3fbdffae162068435eb49d97",
       "installedAt": "2026-10-13T14:35:24.424Z",
-      "updatedAt": "2026-10-27T05:44:36.913Z"
+      "updatedAt": "2026-11-16T04:35:43.596Z"
     },
     "plannotator-setup-goal": {
       "source": "backnotprop/plannotator",
@@ -179,7 +126,45 @@
       "skillPath": "diagram-flows/SKILL.md",
       "skillFolderHash": "c35abdce03e264331f9b1e44a95783ee018065a8",
       "installedAt": "2026-10-23T17:30:45.647Z",
-      "updatedAt": "2026-10-23T17:30:45.647Z"
+      "updatedAt": "2026-11-14T22:26:48.900Z"
+    },
+    "fable-prompt": {
+      "source": "jergason/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/jergason/skills.git",
+      "skillPath": "fable-prompt/SKILL.md",
+      "skillFolderHash": "8c015c28440dee8a8ccc00f793e90acd9b61b7be",
+      "installedAt": "2026-11-14T22:26:48.900Z",
+      "updatedAt": "2026-11-14T22:26:48.900Z"
+    },
+    "goose-mode": {
+      "source": "jergason/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/jergason/skills.git",
+      "skillPath": "goose-mode/SKILL.md",
+      "skillFolderHash": "e320d401b3f9cee94903c60cd51bd2c7e71c955b",
+      "installedAt": "2026-11-14T22:26:48.901Z",
+      "updatedAt": "2026-11-14T22:26:48.901Z"
+    },
+    "ui-hill-climb": {
+      "source": "jergason/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/jergason/skills.git",
+      "skillPath": "ui-hill-climb/SKILL.md",
+      "skillFolderHash": "e6e22add8fe9fa711e3743d86f018b92d694ad89",
+      "installedAt": "2026-11-14T22:26:48.902Z",
+      "updatedAt": "2026-11-18T17:16:33.565Z",
+      "commit": "4e149240eef6e90e25bc23e569a329736b5100d7"
+    },
+    "declauding": {
+      "source": "oaustegard/claude-skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/oaustegard/claude-skills.git",
+      "commit": "d1549932986ccaf2d80db8b5b3e0aab056208b81",
+      "skillPath": "declauding/SKILL.md",
+      "skillFolderHash": "c0a7fc3c3ea44f3ba3e86334b7a39f3bd2d05c99",
+      "installedAt": "2026-11-18T17:29:54.110Z",
+      "updatedAt": "2026-11-18T17:29:54.110Z"
     }
   },
   "dismissed": {
